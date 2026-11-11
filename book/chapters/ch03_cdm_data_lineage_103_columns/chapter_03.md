@@ -688,7 +688,7 @@ Vallado, D. A. (2013). Fundamentals of Astrodynamics and Applications (4th ed.).
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 3](../../Figures/embedded/chapter_03_embedded_01.png)
+![رسم توضيحي أصلي للفصل 3](../../Figures/embedded/chapter_03_embedded_01.svg)
 
 
 ## خلاصة الانتقال

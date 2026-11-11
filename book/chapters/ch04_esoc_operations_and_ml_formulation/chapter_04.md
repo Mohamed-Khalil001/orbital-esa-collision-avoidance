@@ -404,7 +404,7 @@ Statistical Inference on Miss Distance vs. Collision Probability (2025). arXiv:2
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 4](../../Figures/embedded/chapter_04_embedded_01.png)
+![رسم توضيحي أصلي للفصل 4](../../Figures/embedded/chapter_04_embedded_01.svg)
 
 
 ## خلاصة الانتقال

@@ -466,7 +466,7 @@ European Space Agency. Types of Orbits: Polar and Sun-Synchronous Orbits (SSO). 
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 1](../../Figures/embedded/chapter_01_embedded_01.png)
+![رسم توضيحي أصلي للفصل 1](../../Figures/embedded/chapter_01_embedded_01.svg)
 
 
 ## خلاصة الانتقال

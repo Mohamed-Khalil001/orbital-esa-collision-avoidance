@@ -473,7 +473,7 @@ CCSDS (2025). Conjunction Data Message — Pink Sheets Revision Draft CCSDS 508.
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 2](../../Figures/embedded/chapter_02_embedded_01.png)
+![رسم توضيحي أصلي للفصل 2](../../Figures/embedded/chapter_02_embedded_01.svg)
 
 
 ## خلاصة الانتقال
