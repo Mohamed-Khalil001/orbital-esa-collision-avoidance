@@ -1,5 +1,7 @@
 # 🛰️ ORBITAL-AI: Physics-Guided Two-Stage Spacecraft Collision Avoidance & 6-DOF CW/RK4 Astrodynamics Workbench
 
+🚀 **Live application:** [Open ORBITAL-AI on Streamlit](https://orbital-esa-collision-avoidance-3ewp7cecpuqb3kh6kmmbse.streamlit.app/)
+
 [![Official Metric: ESA Loss](https://img.shields.io/badge/Official_ESA_Loss_L-0.6355_(~8th_Comparative)-0284c7?style=for-the-badge)](#1-executive-summary--benchmark-summary)
 [![15-Fold Grouped OOF CV](https://img.shields.io/badge/15--Fold_Grouped_OOF_CV-L%3D0.5181_%7C_F2%3D0.5236-10b981?style=for-the-badge)](#3-methodological-integrity--why-train-cv-vs-test-differs)
 [![Architecture](https://img.shields.io/badge/Engine-Unified_350--Tree_LightGBM_%2B_Risk--Blind_S2-8b5cf6?style=for-the-badge)](#2-unified-end-to-end-system-architecture)
