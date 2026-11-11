@@ -1,0 +1,30 @@
+# --- Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# --- Raw ESA competition data (too large for git; see data/README.md)
+data/*.csv
+data/*.zip
+data/raw/
+!data/sample/
+!data/sample/*.csv
+
+# --- Dry-run folders and old model archives
+models_dryrun/
+reports_dryrun/
+models/archive/*
+!models/archive/.gitkeep
+
+# --- Local secrets and editor files
+.streamlit/secrets.toml
+.env
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

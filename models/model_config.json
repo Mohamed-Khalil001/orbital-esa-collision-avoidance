@@ -1,0 +1,43 @@
+{
+  "chosen_experiment": "M6_LeakFree_TwoStage_PriorAdapted",
+  "model_name": "m6_two_stage",
+  "architecture": "Stage-1 NOCAT Veto + Stage-2 NORISK_NOCAT Physics Rescue + 3-Zone Conditional Regressor",
+  "feature_set": "redundancy_0.95",
+  "high_weight": "balanced_subsample",
+  "clip_low": -6.001,
+  "train_scope": "test_like",
+  "alarm_tau": -6.0,
+  "hard_lock": -5.25,
+  "gate_thresh": -7.0,
+  "validation_seed": 42,
+  "validation_method": "15-fold stratified event-level OOF (8,892 train events, 93 high-risk) + One-shot Private Test (2,167 test events, 150 high-risk)",
+  "train_cv_15fold": {
+    "f2": 0.5236,
+    "mse_high": 0.2672,
+    "esa_loss_L": 0.5181,
+    "cost_r20": 127.47
+  },
+  "private_test_2167": {
+    "m6_leakfree_prior": {
+      "f2": 0.76923,
+      "mse_high": 0.48883,
+      "esa_loss_L": 0.63548,
+      "rank_f2": 1,
+      "rank_loss": 8
+    },
+    "m6_leakfree_r100": {
+      "f2": 0.76825,
+      "mse_high": 0.48863,
+      "esa_loss_L": 0.63604,
+      "rank_f2": 1,
+      "rank_loss": 8
+    },
+    "m7_v4_exploratory_upper_bound": {
+      "f2": 0.80645,
+      "mse_high": 0.39138,
+      "esa_loss_L": 0.48531,
+      "rank_loss": 1
+    }
+  },
+  "retrained_at": "2026-11-11T14:55:00"
+}

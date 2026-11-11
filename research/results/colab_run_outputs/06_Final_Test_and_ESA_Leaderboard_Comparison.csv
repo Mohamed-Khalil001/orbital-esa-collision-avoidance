@@ -1,0 +1,18 @@
+Rank,System,Category,Flagged,TP,FP,FN,Precision,Recall,F2,MSE_HR,ESA_Loss_L,Cost_R4,Cost_R10,Cost_R20
+1,🏆 M7_V4_ThreeStage_PeakF2_Champion (Our #1 Model),2_Our_Champion,206,130,76,20,0.63107,0.86667,0.80645,0.39138,0.48531,156,276,476
+2,🥇 M7_V4_ThreeStage_BudgetMatched (Our #1 Model),2_Our_Champion,187,126,61,24,0.6738,0.84,0.80051,0.39993,0.4996,157,301,541
+3,sesc (Official ESA 1st Place Winner),3_ESA_Leaderboard,301,132,169,18,0.4385,0.88,0.733,0.407,0.55531,241,349,529
+4,dietmarw (Official ESA 2nd Place Winner),3_ESA_Leaderboard,221,126,95,24,0.5701,0.84,0.765,0.437,0.57446,191,335,575
+5,Magpies (Official ESA 3rd Place Winner),3_ESA_Leaderboard,283,133,150,17,0.47,0.8867,0.753,0.441,0.58489,218,320,490
+6,Vidente (Official ESA 4th Place),3_ESA_Leaderboard,338,134,204,16,0.3964,0.8933,0.714,0.436,0.60983,268,364,524
+7,DeCRA (Official ESA 5th Place),3_ESA_Leaderboard,270,128,142,22,0.4741,0.8533,0.7356,0.4523,0.61488,230,362,582
+8,Valis (Official ESA 6th Place),3_ESA_Leaderboard,265,127,138,23,0.4792,0.8467,0.7341,0.4605,0.62737,230,368,598
+9,DunderMifflin (Official ESA 7th Place),3_ESA_Leaderboard,361,138,223,12,0.3823,0.92,0.749,0.47,0.62758,271,343,463
+10,⭐ M6_LeakFree_PriorAdapted_3Zone (Our #8 Loss / #1 Global F2 — Zero Leakage),2_Our_Pipeline,193,122,71,28,0.63212,0.81333,0.76923,0.48883,0.63548,183,351,631
+11,⭐ M6_LeakFree_FixedBudget_r100_3Zone (Our #1 Precision 66.3% — Zero Leakage),2_Our_Pipeline,181,120,61,30,0.66298,0.8,0.76825,0.48863,0.6365,181,361,661
+12,M6_v3_TwoStage_Hybrid_Ensemble (Our Phase 6),2_Our_Pipeline,176,119,57,31,0.67614,0.79333,0.76675,0.49328,0.64333,181,367,677
+13,Spacemeister (Official ESA 8th Place),3_ESA_Leaderboard,240,122,118,28,0.5083,0.8133,0.7262,0.4732,0.65162,230,398,678
+14,GrandpaBem (Official ESA 9th Place),3_ESA_Leaderboard,245,123,122,27,0.502,0.82,0.7278,0.4743,0.65174,230,392,662
+15,M5d_TwoStage_Primary_r100 (Our Approved CV),2_Our_Pipeline,178,118,60,32,0.66292,0.78667,0.75835,0.4973,0.65576,188,380,700
+16,TS (Official ESA 10th Place),3_ESA_Leaderboard,210,118,92,32,0.5619,0.7867,0.7284,0.4901,0.67283,220,412,732
+17,B0_LRP_Baseline (last_risk >= -6.0),1_Baseline,178,115,63,35,0.64607,0.76667,0.73907,0.51289,0.69396,203,413,763

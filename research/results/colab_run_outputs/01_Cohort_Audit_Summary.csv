@@ -1,0 +1,3 @@
+Cohort,Events,High_Risk_Positives,Positive_Rate_Pct
+Train Eligible Events (T >= 2.0d Input + T < 2.0d Target),8892,93,1.0459
+Private Test Events (T >= 2.0d Input + Private Final Target),2167,150,6.922

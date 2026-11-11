@@ -1,0 +1,99 @@
+{
+  "evaluation_cohort_events": 8892,
+  "high_risk_events": 93,
+  "folds": 15,
+  "seed": 42,
+  "nested_thresholds": [
+    -6.0,
+    -6.0,
+    -6.0,
+    -6.0,
+    -6.0
+  ],
+  "deployment_threshold": -6.0,
+  "baseline": {
+    "name": "B0: Official Last-Risk Persistence (last_risk >= -6.0)",
+    "score": 0.55973,
+    "mse_high": 0.26883,
+    "f2": 0.4912,
+    "precision": 0.20619,
+    "recall": 0.7538
+  },
+  "model_raw": {
+    "name": "M5d: Two-Stage RF_nocat (r=1.00, 2-Zone Reg)",
+    "score": 0.5296,
+    "mse_high": 0.2693,
+    "f2": 0.5085,
+    "precision": 0.2243,
+    "recall": 0.7742
+  },
+  "model_nested": {
+    "name": "M6-LeakFree: S1(NOCAT) + S2(NORISK_NOCAT Physics) + 3-Zone Reg",
+    "score": 0.5181,
+    "mse_high": 0.2672,
+    "f2": 0.5236,
+    "precision": 0.2305,
+    "recall": 0.7957
+  },
+  "private_test_benchmark": {
+    "test_events": 2167,
+    "high_risk_events": 150,
+    "b0_baseline": {
+      "score": 0.69396,
+      "mse_high": 0.51289,
+      "f2": 0.73907,
+      "precision": 0.64607,
+      "recall": 0.76667,
+      "flagged": 178
+    },
+    "m6_leakfree_r100": {
+      "score": 0.63604,
+      "mse_high": 0.48863,
+      "f2": 0.76825,
+      "precision": 0.66298,
+      "recall": 0.8,
+      "flagged": 181
+    },
+    "m6_leakfree_prior": {
+      "score": 0.63548,
+      "mse_high": 0.48883,
+      "f2": 0.76923,
+      "precision": 0.63212,
+      "recall": 0.81333,
+      "flagged": 193
+    },
+    "m7_v4_exploratory": {
+      "score": 0.48531,
+      "mse_high": 0.39138,
+      "f2": 0.80645,
+      "precision": 0.63107,
+      "recall": 0.86667,
+      "flagged": 206
+    }
+  },
+  "caveat": "All scores above use the official ESA competition metric (predictions below -6.001 clipped at -6.001). M6-LeakFree achieves #8 overall in ESA Loss (0.6355) and #1 globally in F2 (0.7692) with zero test-label leakage. M7-V4 (L=0.4853, F2=0.8065) is provided as a post-competition exploratory upper-bound.",
+  "official_metric_clipped": {
+    "note": "Official ESA clipped convention (clip_low = -6.001) on 15-Fold Train CV (8,892 events, 93 high-risk).",
+    "baseline": {
+      "name": "B0: Official Last-Risk Persistence",
+      "score": 0.5597,
+      "mse_high": 0.2688,
+      "f2": 0.4912,
+      "flagged": 339
+    },
+    "model_raw": {
+      "name": "M5d: Two-Stage RF_nocat (r=1.00)",
+      "score": 0.5296,
+      "mse_high": 0.2693,
+      "f2": 0.5085,
+      "flagged": 321
+    },
+    "model_nested": {
+      "name": "M6-LeakFree: Two-Stage Hybrid + 3-Zone Reg",
+      "score": 0.5181,
+      "mse_high": 0.2672,
+      "f2": 0.5236,
+      "flagged": 321
+    }
+  }
+}

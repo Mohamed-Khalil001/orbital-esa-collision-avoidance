@@ -1,0 +1,3504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ORBITAL-AI | ESA Conjunction Inference & 6-DOF CW/RK4 Astrodynamics Workbench</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #070b14;
+      --panel: #0f172a;
+      --panel-alt: #131e36;
+      --border: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --violet: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.45;
+      padding: 14px 18px;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, #0f172a 0%, #091020 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .brand h1 { font-size: 1.2rem; font-weight: 700; color: #f8fafc; letter-spacing: -0.01em; }
+    .brand p { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #0b1324;
+      color: var(--text);
+    }
+    .badge.cyan { border-color: rgba(56,189,248,0.4); color: #38bdf8; }
+    .badge.emerald { border-color: rgba(16,185,129,0.4); color: #34d399; }
+    .badge.amber { border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .tab-btn {
+      background: var(--panel);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: #172554;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .disclaimer-bar {
+      background: rgba(245, 158, 11, 0.09);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      margin-bottom: 12px;
+    }
+    .grid-main {
+      display: grid;
+      grid-template-columns: 330px 1fr 370px;
+      gap: 12px;
+      align-items: start;
+    }
+    @media (max-width: 1280px) {
+      .grid-main { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      display: block;
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      background: #080d1a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 9px;
+      font-size: 0.8rem;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .kpi {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .kpi .lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; }
+    .kpi .val { font-size: 1.02rem; font-weight: 700; color: #f8fafc; margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+    .kpi .sub { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+    #webgl-container {
+      width: 100%;
+      height: 430px;
+      background: radial-gradient(circle at center, #0c162d 0%, #050811 100%);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .viewport-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-sm {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #334155;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-sm.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    canvas.eng-canvas {
+      width: 100%;
+      background: #070b14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: block;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.77rem;
+      margin-top: 8px;
+    }
+    table.data-table th, table.data-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 7px 8px;
+      text-align: left;
+    }
+    table.data-table th { color: var(--accent); font-weight: 600; background: #0b1324; }
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .pill-alarm { background: rgba(244,63,94,0.18); color: #fb7185; border: 1px solid rgba(244,63,94,0.4); }
+    .pill-safe { background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>🛰️ ORBITAL-AI: Conjunction Risk Inference & 6-DOF CW/RK4 Astrodynamics Workbench</h1>
+      <p>Unified Two-Stage LightGBM + M6 Physics-Guided Pipeline (T &ge; 2.0 Days Causal Cutoff) &bull; Coupled Clohessy–Wiltshire &amp; RK4 J2 Orbital Simulator</p>
+    </div>
+    <div class="badges">
+      <span class="badge cyan">Loaded Bundle: final_model.joblib (350 S1 + 350 Risk-Blind S2 Trees)</span>
+      <span class="badge emerald">15-Fold Grouped OOF CV: ESA Loss = 0.5181 | F2 = 0.5236</span>
+      <span class="badge amber">Retrospective Test Benchmark: ESA Loss = 0.6355 (~8th Official Leaderboard)</span>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-sim', this)">1. 3D Astrodynamics &amp; Coupled CW/RK4 CAM Workbench</button>
+    <button class="tab-btn" onclick="switchTab('tab-inference', this)">2. Causal CDM History &amp; Two-Stage LightGBM Inference</button>
+    <button class="tab-btn" onclick="switchTab('tab-governance', this)">3. Methodology, Governance &amp; Leaderboard Audit</button>
+  </div>
+
+  <!-- TAB 1: MATLAB/SIMULINK-GRADE 3D ASTRODYNAMICS & CAM WORKBENCH -->
+  <div id="tab-sim" class="tab-pane active">
+    <div class="disclaimer-bar">
+      <strong>ANALYTICAL ASTRODYNAMICS SCENARIO BOUNDARY:</strong> This simulator integrates the coupled 6-state Clohessy–Wiltshire state-transition matrix &Phi;(t, t<sub>0</sub>) + 4th-order Runge–Kutta (RK4) J<sub>2</sub> relative equations of motion and 2D Akella &amp; Alfriend (2000) B-plane polar Gaussian quadrature. Scenario outputs are strictly decoupled from the ML risk classifier and do not constitute operational flight maneuver clearance.
+    </div>
+
+    <div class="grid-main">
+      <!-- Left Column: Conjunction Event Selector & 3-Axis Impulsive Burn Controls -->
+      <div class="card">
+        <div class="card-title">
+          <span>1. Conjunction &amp; 3-Axis CAM Controls</span>
+          <span id="zone-badge" class="status-pill pill-alarm">Z3 RESCUE</span>
+        </div>
+
+        <label for="event-select">Select Benchmark Conjunction Event (Pre-Cutoff T &ge; 2.0d):</label>
+        <select id="event-select" onchange="onSelectEvent()"></select>
+
+        <label for="op-mode-select">Model Operating Mode (.joblib Bundle):</label>
+        <select id="op-mode-select" onchange="updateAll()">
+          <option value="prior">M6-LeakFree Prior-Adapted (final_model.joblib)</option>
+          <option value="r100">M6-LeakFree Fixed-Budget r=1.00 (m6_leakfree_r100_budget.joblib)</option>
+        </select>
+
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);">
+          <div class="card-title" style="margin-bottom: 6px;"><span>Impulsive Maneuver &Delta;v<sub>RTN</sub> (Hill Frame)</span></div>
+
+          <label>Along-Track Burn &Delta;v<sub>T</sub>: <strong id="lbl-dvt">2.50</strong> cm/s</label>
+          <input type="range" id="slider-dvt" min="-10.0" max="10.0" step="0.1" value="2.5" oninput="updateAll()" />
+
+          <label>Radial Burn &Delta;v<sub>R</sub>: <strong id="lbl-dvr">0.00</strong> cm/s</label>
+          <input type="range" id="slider-dvr" min="-10.0" max="10.0" step="0.1" value="0.0" oninput="updateAll()" />
+
+          <label>Cross-Track Burn &Delta;v<sub>N</sub>: <strong id="lbl-dvn">0.00</strong> cm/s</label>
+          <input type="range" id="slider-dvn" min="-10.0" max="10.0" step="0.1" value="0.0" oninput="updateAll()" />
+
+          <label>Burn Lead Time Before TCA: <strong id="lbl-lead">2.20</strong> days</label>
+          <input type="range" id="slider-lead" min="2.0" max="6.0" step="0.05" value="2.20" oninput="updateAll()" />
+
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <button class="btn-sm" onclick="setOptimalProgradeBurn()">Auto-Set +2.5 cm/s Along-Track</button>
+            <button class="btn-sm" onclick="resetBurn()">Zero Burn (&Delta;v = 0)</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" style="margin-top: 12px;">
+          <div class="kpi">
+            <div class="lbl">Pre-Cutoff Last Risk</div>
+            <div class="val" id="kpi-lr">-6.38</div>
+            <div class="sub" id="kpi-maxr">Pc,max: -5.12</div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">M6 .joblib Prediction</div>
+            <div class="val" id="kpi-pred">-5.46</div>
+            <div class="sub" id="kpi-probs">S1: 0.071 | S2: 0.142</div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Pre-CAM Miss Dist</div>
+            <div class="val" id="kpi-miss-pre">5891 m</div>
+            <div class="sub" id="kpi-speed">v_rel: 9414 m/s</div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Post-CAM Miss (RK4)</div>
+            <div class="val" id="kpi-miss-post" style="color:#34d399;">20140 m</div>
+            <div class="sub" id="kpi-shift">&Delta;T Shift: +14256 m</div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Pre-CAM B-Plane Pc</div>
+            <div class="val" id="kpi-bp-pre">-5.46</div>
+            <div class="sub">2D Polar Quadrature</div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Post-CAM B-Plane Pc</div>
+            <div class="val" id="kpi-bp-post" style="color:#38bdf8;">-11.82</div>
+            <div class="sub" id="kpi-cam-status">Below -6.0 Threshold</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Column: 3D WebGL Conjunction & Orbital Viewport + RK4 Separation Timeline -->
+      <div class="card">
+        <div class="viewport-toolbar">
+          <div style="display:flex; gap:6px;">
+            <button id="btn-frame-rtn" class="btn-sm active" onclick="setCameraFrame('rtn')">Target-Centered RTN Hill Frame (MATLAB View)</button>
+            <button id="btn-frame-eci" class="btn-sm" onclick="setCameraFrame('eci')">3D Earth LEO Dual-Orbit Inertial Frame</button>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button id="btn-play" class="btn-sm active" onclick="togglePlay()">⏸ Pause</button>
+            <span style="font-size:0.74rem; color:var(--muted);">TCA Scrubber: <strong id="lbl-t-scrub" style="color:#38bdf8;">t = 0.0 s</strong></span>
+            <input type="range" id="slider-tscrub" min="-600" max="600" step="5" value="0" style="width:130px;" oninput="onScrubTime()" />
+          </div>
+        </div>
+
+        <div id="webgl-container"></div>
+
+        <div style="margin-top: 10px;">
+          <div class="card-title" style="margin-bottom: 6px;">
+            <span>RK4 Relative Separation Distance ||r<sub>rel</sub>(t)|| Around TCA (t &in; [-600 s, +600 s])</span>
+            <span style="font-size:0.72rem; color:var(--muted);">Solid Rose: Nominal Pre-CAM &bull; Dashed Cyan: Post-CAM RK4 J2</span>
+          </div>
+          <canvas id="canvas-rk4-sep" class="eng-canvas" height="175"></canvas>
+        </div>
+      </div>
+
+      <!-- Right Column: 2D Akella & Alfriend Encounter B-Plane + Parametric Delta-v Curve -->
+      <div class="card">
+        <div class="card-title">
+          <span>2D Encounter B-Plane (&xi;, &zeta;) Cross-Section</span>
+          <span style="font-size:0.7rem; color:var(--muted);">1&sigma; / 2&sigma; / 3&sigma; Ellipses</span>
+        </div>
+        <canvas id="canvas-bplane" class="eng-canvas" height="270"></canvas>
+
+        <div style="margin-top: 12px;">
+          <div class="card-title" style="margin-bottom: 6px;">
+            <span>Parametric &Delta;v<sub>T</sub> vs. Post-CAM log<sub>10</sub>(P<sub>c</sub>) Curve</span>
+          </div>
+          <canvas id="canvas-dv-curve" class="eng-canvas" height="195"></canvas>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 0.73rem; color: var(--muted); background: #091020; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border);">
+          <div><strong>6-State CW Matrix &Phi;(t, t<sub>0</sub>) + RK4 State Vector at TCA:</strong></div>
+          <div id="txt-rtn-state" style="font-family: monospace; margin-top: 4px; color: #cbd5e1;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: CAUSAL CDM HISTORY & TWO-STAGE LIGHTGBM INFERENCE -->
+  <div id="tab-inference" class="tab-pane">
+    <div class="grid-main" style="grid-template-columns: 1fr 1fr;">
+      <div class="card">
+        <div class="card-title">
+          <span>Pre-Cutoff CDM Time-Series Evolution (T &ge; 2.0 Days Causal Cutoff Wall)</span>
+          <span style="font-size:0.72rem; color:#34d399;">Zero Post-Cutoff Leakage</span>
+        </div>
+        <div style="height: 290px;">
+          <canvas id="chart-cdm-series"></canvas>
+        </div>
+        <div style="margin-top: 12px;">
+          <div class="card-title"><span>Chronological Pre-Cutoff CDM Table (Passed to filter_causal_cdms &amp; build_event_features)</span></div>
+          <table class="data-table" id="tbl-cdm-history">
+            <thead>
+              <tr>
+                <th>CDM #</th>
+                <th>time_to_tca (days)</th>
+                <th>Operational Risk log10(Pc)</th>
+                <th>Max Diluted Risk log10(Pc,max)</th>
+                <th>Dilution Gap</th>
+                <th>Causal Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Unified .joblib Pipeline Inspection (Stage-1 NOCAT + Stage-2 Risk-Blind Allowlist)</span>
+        </div>
+        <table class="data-table">
+          <tbody>
+            <tr><th>Loaded Model Bundle</th><td><code>models/final_model.joblib</code> (SHA-256 Verified)</td></tr>
+            <tr><th>Stage-1 Veto Classifier (Z2: -6.0 &le; LR &lt; -5.25)</th><td>350 Compiled LightGBM v4 Trees on 200 <code>NOCAT</code> Features + OOF Distillation Head</td></tr>
+            <tr><th>Stage-2 Risk-Blind Classifier (Z3: -7.0 &le; LR &lt; -6.0)</th><td>350 Compiled LightGBM v4 Trees strictly on 184 <code>STAGE2_PHYSICAL_ALLOWLIST</code> Features</td></tr>
+            <tr><th>Stage-2 Operational Risk Leakage Check</th><td><span class="status-pill pill-safe">0.000000 Sensitivity to RISK_HISTORY_COLS</span></td></tr>
+            <tr><th>Stage-3 Conditional Regressor (Z1 / Z2 / Z3)</th><td>Train-Fitted 3-Zone Shrinkage &amp; OLS Regressor (Learned on Train Positives y<sub>tr</sub> = 1)</td></tr>
+            <tr><th>Unsupervised Prior-Shift Adaptation</th><td>Saerens–Latinne–Decaestecker (2002) EM (&pi;<sub>tr</sub> = 1.05% &rarr; &pi;<sub>te</sub> = 6.48%, KS Stat = 0.0503)</td></tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 14px;">
+          <div class="card-title"><span>Interactive API Payload Tester (POST /api/v1/predict-event)</span></div>
+          <pre id="pre-api-payload" style="background:#060a12; color:#38bdf8; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:0.73rem; overflow-x:auto; max-height:240px;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: METHODOLOGY, GOVERNANCE & LEADERBOARD AUDIT -->
+  <div id="tab-governance" class="tab-pane">
+    <div class="grid-main" style="grid-template-columns: 1fr 1fr;">
+      <div class="card">
+        <div class="card-title"><span>Methodological Transparency &amp; Why Train CV vs. Test Differs</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Evaluation Split / Protocol</th>
+              <th>Events</th>
+              <th>Positive Rate</th>
+              <th>F<sub>2</sub> Score</th>
+              <th>MSE<sub>HR</sub></th>
+              <th>Official ESA Loss L</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>15-Fold Event-Grouped OOF CV (Primary Unbiased Scientific Benchmark)</strong></td>
+              <td>8,892</td>
+              <td>1.05% (93)</td>
+              <td>0.5236</td>
+              <td>0.2713</td>
+              <td><strong>0.5181</strong></td>
+            </tr>
+            <tr>
+              <td><strong>M6-LeakFree Fixed-Budget r=1.00 (Retrospective Test Benchmark)</strong></td>
+              <td>2,167</td>
+              <td>3.18% (69)</td>
+              <td>0.7692</td>
+              <td>0.4896</td>
+              <td><strong>0.6365</strong></td>
+            </tr>
+            <tr>
+              <td><strong>M6-LeakFree Prior-Adapted (Retrospective Test Benchmark)</strong></td>
+              <td>2,167</td>
+              <td>3.18% (69)</td>
+              <td>0.7684</td>
+              <td>0.4883</td>
+              <td><strong>0.6355</strong></td>
+            </tr>
+            <tr>
+              <td><strong>B0 Last-Risk Persistence Baseline (last_risk &ge; -6.0)</strong></td>
+              <td>2,167</td>
+              <td>3.18% (69)</td>
+              <td>0.7330</td>
+              <td>0.5087</td>
+              <td><strong>0.6940</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.78rem; color:var(--muted); margin-top:10px;">
+          <strong>Scientific Explanation of the Train CV vs. Test Shift:</strong> As documented in the official ESA post-competition paper (<a href="https://www.sciopen.com/article/10.1007/s42064-021-0101-5" target="_blank" style="color:#38bdf8;">Uriot et al., 2022</a>), 505 synthetic Monte Carlo events were injected into the dataset, yielding a ~2.3&times; to 3.0&times; higher high-risk positive prevalence in the test split than in the test-like training split. A higher positive base rate naturally reduces the false-positive-to-true-positive ratio at a given operating threshold (increasing F<sub>2</sub> from 0.5236 to 0.7684), whereas hard-to-predict late-escalating high-risk test events increase MSE<sub>HR</sub> from 0.2713 to 0.4883, raising overall ESA Loss L = MSE<sub>HR</sub> / F<sub>2</sub> from 0.5181 to 0.6355.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>Official ESA Kelvins Leaderboard Context (Ordered Strictly by ESA Loss L)</span></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team / System</th>
+              <th>Official ESA Loss L (Lower is Better)</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>sesc</td><td>0.55531</td><td>Official ESA Winner</td></tr>
+            <tr><td>2</td><td>dietmarw</td><td>0.57446</td><td>Official ESA 2nd</td></tr>
+            <tr><td>3</td><td>Magpies</td><td>0.58489</td><td>Official ESA 3rd</td></tr>
+            <tr><td>4</td><td>Vidente</td><td>0.60983</td><td>Official ESA 4th</td></tr>
+            <tr><td>5</td><td>DeCRA</td><td>0.61488</td><td>Official ESA 5th</td></tr>
+            <tr><td>6</td><td>Valis</td><td>0.62737</td><td>Official ESA 6th</td></tr>
+            <tr><td>7</td><td>DunderMifflin</td><td>0.62758</td><td>Official ESA 7th</td></tr>
+            <tr style="background:rgba(56,189,248,0.12);"><td><strong>~8 (Comparative)</strong></td><td><strong>M6-LeakFree (Our Retrospective Benchmark)</strong></td><td><strong>0.63548</strong></td><td><strong>Research Prototype</strong></td></tr>
+            <tr><td>8 (Official)</td><td>Spacemeister</td><td>0.65162</td><td>Official ESA 8th</td></tr>
+            <tr><td>9 (Official)</td><td>GrandpaBem</td><td>0.65174</td><td>Official ESA 9th</td></tr>
+            <tr><td>10 (Official)</td><td>TS</td><td>0.67283</td><td>Official ESA 10th</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SIM_EVENTS = [
+  {
+    "event_id": 8,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 5,
+    "last_time_to_tca_days": 2.222,
+    "last_risk": -6.3757,
+    "max_risk_estimate": -5.1214,
+    "dilution_gap": 1.2544,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.46235,
+    "S1_score": -4.0663,
+    "S2_score": -1.9179,
+    "p_rf": 0.0604,
+    "p_hgb": 0.207,
+    "p_et": 0.1267,
+    "p_lgb": 0.055887,
+    "miss_distance_m": 5891.0,
+    "mahalanobis_distance": 11.28,
+    "relative_speed_ms": 9414.0,
+    "rel_pos_r_m": 194.2,
+    "rel_pos_t_m": 3747.5,
+    "rel_pos_n_m": 3013.4,
+    "rel_vel_r_ms": 3.4,
+    "rel_vel_t_ms": -5898.3,
+    "rel_vel_n_ms": 7337.3,
+    "t_sma_km": 7063.67,
+    "t_ecc": 0.000753,
+    "t_inc_deg": 98.093,
+    "c_sma_km": 7069.44,
+    "c_ecc": 0.001696,
+    "c_inc_deg": 73.956,
+    "t_sigma_r_m": 5.64,
+    "t_sigma_t_m": 98.76,
+    "t_sigma_n_m": 2.42,
+    "c_sigma_r_m": 301.34,
+    "c_sigma_t_m": 2448.94,
+    "c_sigma_n_m": 362.48,
+    "c_obs_used": 15,
+    "f10_solar_flux": 182.0,
+    "cdm_series": [
+      {
+        "t": 2.222,
+        "r": -6.3757,
+        "m": -5.1214
+      }
+    ],
+    "p_s2_risk_blind": 0.128101,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 21,
+    "mission_id": 7,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 2,
+    "last_time_to_tca_days": 2.015,
+    "last_risk": -30.0,
+    "max_risk_estimate": -8.117,
+    "dilution_gap": 21.883,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -16.4602,
+    "S2_score": -0.1291,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.061017,
+    "miss_distance_m": 4144.0,
+    "mahalanobis_distance": 36.4,
+    "relative_speed_ms": 14138.0,
+    "rel_pos_r_m": -998.1,
+    "rel_pos_t_m": 453.5,
+    "rel_pos_n_m": -1120.7,
+    "rel_vel_r_ms": 74.5,
+    "rel_vel_t_ms": -13099.9,
+    "rel_vel_n_ms": -5316.8,
+    "t_sma_km": 6872.26,
+    "t_ecc": 0.000656,
+    "t_inc_deg": 87.832,
+    "c_sma_km": 6924.7,
+    "c_ecc": 0.012459,
+    "c_inc_deg": 98.701,
+    "t_sigma_r_m": 3.41,
+    "t_sigma_t_m": 308.85,
+    "t_sigma_n_m": 2.67,
+    "c_sigma_r_m": 589.9,
+    "c_sigma_t_m": 73188.47,
+    "c_sigma_n_m": 70.69,
+    "c_obs_used": 21,
+    "f10_solar_flux": 129.0,
+    "cdm_series": [
+      {
+        "t": 2.05,
+        "r": -30.0,
+        "m": -8.117
+      }
+    ],
+    "p_s2_risk_blind": 0.467779,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 29,
+    "mission_id": 7,
+    "c_object_type": "DEBRIS",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 4,
+    "last_time_to_tca_days": 2.138,
+    "last_risk": -6.7823,
+    "max_risk_estimate": -6.7711,
+    "dilution_gap": 0.0112,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.10778,
+    "S1_score": -3.8496,
+    "S2_score": -0.2131,
+    "p_rf": 0.147,
+    "p_hgb": 0.1766,
+    "p_et": 0.139,
+    "p_lgb": 0.209877,
+    "miss_distance_m": 4613.0,
+    "mahalanobis_distance": 5.48,
+    "relative_speed_ms": 10738.0,
+    "rel_pos_r_m": -131.3,
+    "rel_pos_t_m": -32138.8,
+    "rel_pos_n_m": 30765.8,
+    "rel_vel_r_ms": -442.0,
+    "rel_vel_t_ms": -7416.8,
+    "rel_vel_n_ms": -7749.9,
+    "t_sma_km": 6866.64,
+    "t_ecc": 0.003097,
+    "t_inc_deg": 87.777,
+    "c_sma_km": 7188.3,
+    "c_ecc": 0.074318,
+    "c_inc_deg": 96.655,
+    "t_sigma_r_m": 5.33,
+    "t_sigma_t_m": 83.19,
+    "t_sigma_n_m": 1.95,
+    "c_sigma_r_m": 3959.75,
+    "c_sigma_t_m": 61100.77,
+    "c_sigma_n_m": 645.19,
+    "c_obs_used": 30,
+    "f10_solar_flux": 72.0,
+    "cdm_series": [
+      {
+        "t": 2.138,
+        "r": -6.7823,
+        "m": -6.7711
+      }
+    ],
+    "p_s2_risk_blind": 0.446934,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 42,
+    "mission_id": 9,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "VETOED_SAFE",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.407,
+    "last_risk": -5.8861,
+    "max_risk_estimate": -5.317,
+    "dilution_gap": 0.569,
+    "b0_pred": 1,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -2.7462,
+    "S2_score": -0.6397,
+    "p_rf": 0.0905,
+    "p_hgb": 0.2492,
+    "p_et": 0.256,
+    "p_lgb": 0.672054,
+    "miss_distance_m": 3504.0,
+    "mahalanobis_distance": 9.93,
+    "relative_speed_ms": 14825.0,
+    "rel_pos_r_m": -1364.6,
+    "rel_pos_t_m": 107.4,
+    "rel_pos_n_m": -561.1,
+    "rel_vel_r_ms": -2.2,
+    "rel_vel_t_ms": -14543.2,
+    "rel_vel_n_ms": -2878.9,
+    "t_sma_km": 6988.89,
+    "t_ecc": 0.000618,
+    "t_inc_deg": 97.915,
+    "c_sma_km": 7015.4,
+    "c_ecc": 0.00349,
+    "c_inc_deg": 86.379,
+    "t_sigma_r_m": 40.35,
+    "t_sigma_t_m": 740.18,
+    "t_sigma_n_m": 42.03,
+    "c_sigma_r_m": 563.7,
+    "c_sigma_t_m": 11724.81,
+    "c_sigma_n_m": 152.77,
+    "c_obs_used": 22,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.407,
+        "r": -5.8861,
+        "m": -5.317
+      }
+    ],
+    "p_s2_risk_blind": 0.345314,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 70,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.213,
+    "last_risk": -5.1623,
+    "max_risk_estimate": -5.0715,
+    "dilution_gap": 0.0908,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.03729,
+    "S1_score": -2.0945,
+    "S2_score": -1.1206,
+    "p_rf": 0.2,
+    "p_hgb": 0.3072,
+    "p_et": 0.376,
+    "p_lgb": 0.790591,
+    "miss_distance_m": 6730.0,
+    "mahalanobis_distance": 48.57,
+    "relative_speed_ms": 3225.0,
+    "rel_pos_r_m": -82.7,
+    "rel_pos_t_m": -6592.1,
+    "rel_pos_n_m": 1455.0,
+    "rel_vel_r_ms": 23.6,
+    "rel_vel_t_ms": -695.9,
+    "rel_vel_n_ms": -3149.8,
+    "t_sma_km": 7155.3,
+    "t_ecc": 0.00279,
+    "t_inc_deg": 98.535,
+    "c_sma_km": 7161.23,
+    "c_ecc": 0.002999,
+    "c_inc_deg": 98.881,
+    "t_sigma_r_m": 4.11,
+    "t_sigma_t_m": 36.0,
+    "t_sigma_n_m": 1.3,
+    "c_sigma_r_m": 149.55,
+    "c_sigma_t_m": 4099.4,
+    "c_sigma_n_m": 66.37,
+    "c_obs_used": 42,
+    "f10_solar_flux": 67.0,
+    "cdm_series": [
+      {
+        "t": 2.213,
+        "r": -5.1623,
+        "m": -5.0715
+      }
+    ],
+    "p_s2_risk_blind": 0.245891,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 75,
+    "mission_id": 9,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 3,
+    "last_time_to_tca_days": 2.062,
+    "last_risk": -5.647,
+    "max_risk_estimate": -3.8649,
+    "dilution_gap": 1.7822,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.64104,
+    "S1_score": -1.9846,
+    "S2_score": 0.3967,
+    "p_rf": 0.2925,
+    "p_hgb": 0.7066,
+    "p_et": 0.2916,
+    "p_lgb": 0.937816,
+    "miss_distance_m": 246.0,
+    "mahalanobis_distance": 5.61,
+    "relative_speed_ms": 14929.0,
+    "rel_pos_r_m": 159.4,
+    "rel_pos_t_m": -25.1,
+    "rel_pos_n_m": 158.2,
+    "rel_vel_r_ms": 17.1,
+    "rel_vel_t_ms": -14766.2,
+    "rel_vel_n_ms": -2199.3,
+    "t_sma_km": 7006.88,
+    "t_ecc": 0.001192,
+    "t_inc_deg": 97.779,
+    "c_sma_km": 7013.44,
+    "c_ecc": 0.003627,
+    "c_inc_deg": 99.11,
+    "t_sigma_r_m": 5.99,
+    "t_sigma_t_m": 60.62,
+    "t_sigma_n_m": 7.48,
+    "c_sigma_r_m": 41.9,
+    "c_sigma_t_m": 3542.86,
+    "c_sigma_n_m": 124.07,
+    "c_obs_used": 18,
+    "f10_solar_flux": 75.0,
+    "cdm_series": [
+      {
+        "t": 2.062,
+        "r": -5.647,
+        "m": -3.8649
+      }
+    ],
+    "p_s2_risk_blind": 0.597895,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 77,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.021,
+    "last_risk": -4.0396,
+    "max_risk_estimate": -3.767,
+    "dilution_gap": 0.2726,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.19526,
+    "S1_score": -1.0725,
+    "S2_score": -0.5312,
+    "p_rf": 0.5804,
+    "p_hgb": 0.7935,
+    "p_et": 0.7168,
+    "p_lgb": 0.9002,
+    "miss_distance_m": 735.0,
+    "mahalanobis_distance": 4.1,
+    "relative_speed_ms": 14237.0,
+    "rel_pos_r_m": -92.9,
+    "rel_pos_t_m": 200.4,
+    "rel_pos_n_m": 660.8,
+    "rel_vel_r_ms": 10.6,
+    "rel_vel_t_ms": -13609.7,
+    "rel_vel_n_ms": 4182.2,
+    "t_sma_km": 7161.87,
+    "t_ecc": 0.001844,
+    "t_inc_deg": 98.629,
+    "c_sma_km": 7164.21,
+    "c_ecc": 0.001904,
+    "c_inc_deg": 102.255,
+    "t_sigma_r_m": 3.05,
+    "t_sigma_t_m": 30.39,
+    "t_sigma_n_m": 1.95,
+    "c_sigma_r_m": 53.96,
+    "c_sigma_t_m": 1001.91,
+    "c_sigma_n_m": 183.54,
+    "c_obs_used": 15,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.05,
+        "r": -4.0396,
+        "m": -3.767
+      }
+    ],
+    "p_s2_risk_blind": 0.370228,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 93,
+    "mission_id": 9,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 9,
+    "last_time_to_tca_days": 2.259,
+    "last_risk": -30.0,
+    "max_risk_estimate": -7.2224,
+    "dilution_gap": 22.7776,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -19.4916,
+    "S2_score": -2.7821,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.010192,
+    "miss_distance_m": 15629.0,
+    "mahalanobis_distance": 374.6,
+    "relative_speed_ms": 15034.0,
+    "rel_pos_r_m": 162.5,
+    "rel_pos_t_m": 16.8,
+    "rel_pos_n_m": -287.0,
+    "rel_vel_r_ms": 34.5,
+    "rel_vel_t_ms": -14997.6,
+    "rel_vel_n_ms": -1068.5,
+    "t_sma_km": 7006.76,
+    "t_ecc": 0.002126,
+    "t_inc_deg": 97.955,
+    "c_sma_km": 6982.48,
+    "c_ecc": 0.004156,
+    "c_inc_deg": 73.961,
+    "t_sigma_r_m": 3.5,
+    "t_sigma_t_m": 57.33,
+    "t_sigma_n_m": 2.93,
+    "c_sigma_r_m": 358.52,
+    "c_sigma_t_m": 1639.67,
+    "c_sigma_n_m": 52.18,
+    "c_obs_used": 39,
+    "f10_solar_flux": 69.0,
+    "cdm_series": [
+      {
+        "t": 2.259,
+        "r": -30.0,
+        "m": -7.2224
+      }
+    ],
+    "p_s2_risk_blind": 0.058299,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 97,
+    "mission_id": 24,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "VETOED_SAFE",
+    "n_allowed_cdms": 3,
+    "last_time_to_tca_days": 2.922,
+    "last_risk": -5.8114,
+    "max_risk_estimate": -4.7231,
+    "dilution_gap": 1.0883,
+    "b0_pred": 1,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -3.0471,
+    "S2_score": -2.4707,
+    "p_rf": 0.0534,
+    "p_hgb": 0.1412,
+    "p_et": 0.0801,
+    "p_lgb": 0.390748,
+    "miss_distance_m": 587.0,
+    "mahalanobis_distance": 9.54,
+    "relative_speed_ms": 14007.0,
+    "rel_pos_r_m": -8.9,
+    "rel_pos_t_m": 381.5,
+    "rel_pos_n_m": 965.0,
+    "rel_vel_r_ms": 203.4,
+    "rel_vel_t_ms": -13014.9,
+    "rel_vel_n_ms": 5176.2,
+    "t_sma_km": 6926.44,
+    "t_ecc": 0.018657,
+    "t_inc_deg": 98.272,
+    "c_sma_km": 7055.9,
+    "c_ecc": 0.014324,
+    "c_inc_deg": 97.852,
+    "t_sigma_r_m": 10.68,
+    "t_sigma_t_m": 508.36,
+    "t_sigma_n_m": 5.09,
+    "c_sigma_r_m": 9.75,
+    "c_sigma_t_m": 108.37,
+    "c_sigma_n_m": 11.84,
+    "c_obs_used": 89,
+    "f10_solar_flux": 84.0,
+    "cdm_series": [
+      {
+        "t": 2.922,
+        "r": -5.8114,
+        "m": -4.7231
+      }
+    ],
+    "p_s2_risk_blind": 0.077941,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 98,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.191,
+    "last_risk": -5.7263,
+    "max_risk_estimate": -5.714,
+    "dilution_gap": 0.0123,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.71241,
+    "S1_score": -2.3628,
+    "S2_score": -0.7359,
+    "p_rf": 0.2852,
+    "p_hgb": 0.6378,
+    "p_et": 0.3819,
+    "p_lgb": 0.842267,
+    "miss_distance_m": 47878.0,
+    "mahalanobis_distance": 125.32,
+    "relative_speed_ms": 9297.0,
+    "rel_pos_r_m": -334.0,
+    "rel_pos_t_m": 37591.7,
+    "rel_pos_n_m": 29686.6,
+    "rel_vel_r_ms": -36.8,
+    "rel_vel_t_ms": -5762.4,
+    "rel_vel_n_ms": 7296.3,
+    "t_sma_km": 7062.16,
+    "t_ecc": 0.000558,
+    "t_inc_deg": 98.284,
+    "c_sma_km": 7049.75,
+    "c_ecc": 0.002242,
+    "c_inc_deg": 98.367,
+    "t_sigma_r_m": 1.98,
+    "t_sigma_t_m": 40.47,
+    "t_sigma_n_m": 2.36,
+    "c_sigma_r_m": 429.16,
+    "c_sigma_t_m": 49279.15,
+    "c_sigma_n_m": 540.13,
+    "c_obs_used": 15,
+    "f10_solar_flux": 75.0,
+    "cdm_series": [
+      {
+        "t": 2.191,
+        "r": -5.7263,
+        "m": -5.714
+      }
+    ],
+    "p_s2_risk_blind": 0.323901,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 107,
+    "mission_id": 18,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.33,
+    "last_risk": -3.9397,
+    "max_risk_estimate": -3.9363,
+    "dilution_gap": 0.0034,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.12034,
+    "S1_score": -0.8681,
+    "S2_score": -0.1768,
+    "p_rf": 0.3825,
+    "p_hgb": 0.8165,
+    "p_et": 0.5736,
+    "p_lgb": 0.934004,
+    "miss_distance_m": 1226.0,
+    "mahalanobis_distance": 4.2,
+    "relative_speed_ms": 14406.0,
+    "rel_pos_r_m": 70.5,
+    "rel_pos_t_m": 324.7,
+    "rel_pos_n_m": 1261.3,
+    "rel_vel_r_ms": 49.5,
+    "rel_vel_t_ms": -13947.2,
+    "rel_vel_n_ms": 3609.6,
+    "t_sma_km": 7193.08,
+    "t_ecc": 0.001752,
+    "t_inc_deg": 98.64,
+    "c_sma_km": 7227.05,
+    "c_ecc": 0.00693,
+    "c_inc_deg": 98.931,
+    "t_sigma_r_m": 1.36,
+    "t_sigma_t_m": 45.17,
+    "t_sigma_n_m": 2.06,
+    "c_sigma_r_m": 295.98,
+    "c_sigma_t_m": 4047.75,
+    "c_sigma_n_m": 326.82,
+    "c_obs_used": 15,
+    "f10_solar_flux": 69.0,
+    "cdm_series": [
+      {
+        "t": 2.33,
+        "r": -3.9397,
+        "m": -3.9363
+      }
+    ],
+    "p_s2_risk_blind": 0.455924,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 108,
+    "mission_id": 15,
+    "c_object_type": "DEBRIS",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.145,
+    "last_risk": -6.0372,
+    "max_risk_estimate": -5.9176,
+    "dilution_gap": 0.1196,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.95,
+    "S1_score": -3.0015,
+    "S2_score": -0.9348,
+    "p_rf": 0.0654,
+    "p_hgb": 0.3809,
+    "p_et": 0.0898,
+    "p_lgb": 0.566889,
+    "miss_distance_m": 2844.0,
+    "mahalanobis_distance": 9.18,
+    "relative_speed_ms": 6857.0,
+    "rel_pos_r_m": -115.0,
+    "rel_pos_t_m": -2086.2,
+    "rel_pos_n_m": 1091.0,
+    "rel_vel_r_ms": -37.7,
+    "rel_vel_t_ms": -3171.3,
+    "rel_vel_n_ms": -6079.2,
+    "t_sma_km": 7084.94,
+    "t_ecc": 0.003111,
+    "t_inc_deg": 91.943,
+    "c_sma_km": 7032.67,
+    "c_ecc": 0.011383,
+    "c_inc_deg": 99.038,
+    "t_sigma_r_m": 3.32,
+    "t_sigma_t_m": 32.24,
+    "t_sigma_n_m": 1.25,
+    "c_sigma_r_m": 184.26,
+    "c_sigma_t_m": 6092.97,
+    "c_sigma_n_m": 176.44,
+    "c_obs_used": 18,
+    "f10_solar_flux": 73.0,
+    "cdm_series": [
+      {
+        "t": 2.145,
+        "r": -6.0372,
+        "m": -5.9176
+      }
+    ],
+    "p_s2_risk_blind": 0.281953,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 109,
+    "mission_id": 19,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 10,
+    "last_time_to_tca_days": 3.135,
+    "last_risk": -5.5754,
+    "max_risk_estimate": -5.3836,
+    "dilution_gap": 0.1918,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.5766,
+    "S1_score": -1.9093,
+    "S2_score": 0.1736,
+    "p_rf": 0.0767,
+    "p_hgb": 0.1555,
+    "p_et": 0.2182,
+    "p_lgb": 0.932323,
+    "miss_distance_m": 226.0,
+    "mahalanobis_distance": 2.5,
+    "relative_speed_ms": 12082.0,
+    "rel_pos_r_m": -198.7,
+    "rel_pos_t_m": 5691.5,
+    "rel_pos_n_m": -7827.0,
+    "rel_vel_r_ms": -1.6,
+    "rel_vel_t_ms": -9771.2,
+    "rel_vel_n_ms": -7107.8,
+    "t_sma_km": 7082.42,
+    "t_ecc": 0.00395,
+    "t_inc_deg": 98.354,
+    "c_sma_km": 7076.22,
+    "c_ecc": 0.00471,
+    "c_inc_deg": 81.142,
+    "t_sigma_r_m": 7.16,
+    "t_sigma_t_m": 86.77,
+    "t_sigma_n_m": 6.37,
+    "c_sigma_r_m": 51.66,
+    "c_sigma_t_m": 1984.43,
+    "c_sigma_n_m": 40.09,
+    "c_obs_used": 27,
+    "f10_solar_flux": 81.0,
+    "cdm_series": [
+      {
+        "t": 3.135,
+        "r": -5.5754,
+        "m": -5.3836
+      }
+    ],
+    "p_s2_risk_blind": 0.543297,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 117,
+    "mission_id": 1,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.01,
+    "last_risk": -5.3488,
+    "max_risk_estimate": -4.0414,
+    "dilution_gap": 1.3074,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.37266,
+    "S1_score": -2.3324,
+    "S2_score": -1.2319,
+    "p_rf": 0.0367,
+    "p_hgb": 0.1759,
+    "p_et": 0.0783,
+    "p_lgb": 0.72267,
+    "miss_distance_m": 2670.0,
+    "mahalanobis_distance": 44.28,
+    "relative_speed_ms": 9645.0,
+    "rel_pos_r_m": 49.6,
+    "rel_pos_t_m": 64.7,
+    "rel_pos_n_m": 55.1,
+    "rel_vel_r_ms": -81.1,
+    "rel_vel_t_ms": -6215.4,
+    "rel_vel_n_ms": 7374.8,
+    "t_sma_km": 7062.07,
+    "t_ecc": 0.000525,
+    "t_inc_deg": 98.08,
+    "c_sma_km": 7022.44,
+    "c_ecc": 0.012626,
+    "c_inc_deg": 97.914,
+    "t_sigma_r_m": 2.84,
+    "t_sigma_t_m": 36.42,
+    "t_sigma_n_m": 1.38,
+    "c_sigma_r_m": 44.28,
+    "c_sigma_t_m": 1537.2,
+    "c_sigma_n_m": 21.64,
+    "c_obs_used": 30,
+    "f10_solar_flux": 72.0,
+    "cdm_series": [
+      {
+        "t": 2.05,
+        "r": -5.3488,
+        "m": -4.0414
+      }
+    ],
+    "p_s2_risk_blind": 0.225845,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 146,
+    "mission_id": 22,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.057,
+    "last_risk": -5.3614,
+    "max_risk_estimate": -5.1958,
+    "dilution_gap": 0.1656,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.384,
+    "S1_score": -1.97,
+    "S2_score": -0.3987,
+    "p_rf": 0.1576,
+    "p_hgb": 0.427,
+    "p_et": 0.1846,
+    "p_lgb": 0.897015,
+    "miss_distance_m": 200.0,
+    "mahalanobis_distance": 2.13,
+    "relative_speed_ms": 15446.0,
+    "rel_pos_r_m": -337.5,
+    "rel_pos_t_m": -3.3,
+    "rel_pos_n_m": -5.3,
+    "rel_vel_r_ms": 159.6,
+    "rel_vel_t_ms": -15445.2,
+    "rel_vel_n_ms": 147.7,
+    "t_sma_km": 6927.01,
+    "t_ecc": 0.018571,
+    "t_inc_deg": 98.288,
+    "c_sma_km": 7715.5,
+    "c_ecc": 0.096093,
+    "c_inc_deg": 82.043,
+    "t_sigma_r_m": 40.27,
+    "t_sigma_t_m": 1707.98,
+    "t_sigma_n_m": 4.53,
+    "c_sigma_r_m": 190.65,
+    "c_sigma_t_m": 1374.16,
+    "c_sigma_n_m": 78.47,
+    "c_obs_used": 38,
+    "f10_solar_flux": 77.0,
+    "cdm_series": [
+      {
+        "t": 2.057,
+        "r": -5.3614,
+        "m": -5.1958
+      }
+    ],
+    "p_s2_risk_blind": 0.401623,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 155,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 6,
+    "last_time_to_tca_days": 2.266,
+    "last_risk": -4.5538,
+    "max_risk_estimate": -4.5533,
+    "dilution_gap": 0.0005,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.58091,
+    "S1_score": -1.2658,
+    "S2_score": -0.0024,
+    "p_rf": 0.0645,
+    "p_hgb": 0.1316,
+    "p_et": 0.1486,
+    "p_lgb": 0.937237,
+    "miss_distance_m": 2606.0,
+    "mahalanobis_distance": 32.07,
+    "relative_speed_ms": 6906.0,
+    "rel_pos_r_m": -28.6,
+    "rel_pos_t_m": -2570.1,
+    "rel_pos_n_m": -1292.0,
+    "rel_vel_r_ms": -218.7,
+    "rel_vel_t_ms": -3099.5,
+    "rel_vel_n_ms": 6167.6,
+    "t_sma_km": 7172.58,
+    "t_ecc": 0.000964,
+    "t_inc_deg": 98.603,
+    "c_sma_km": 7367.54,
+    "c_ecc": 0.038898,
+    "c_inc_deg": 45.282,
+    "t_sigma_r_m": 3.07,
+    "t_sigma_t_m": 33.53,
+    "t_sigma_n_m": 2.82,
+    "c_sigma_r_m": 224.67,
+    "c_sigma_t_m": 7019.03,
+    "c_sigma_n_m": 36.33,
+    "c_obs_used": 78,
+    "f10_solar_flux": 69.0,
+    "cdm_series": [
+      {
+        "t": 2.266,
+        "r": -4.5538,
+        "m": -4.5533
+      }
+    ],
+    "p_s2_risk_blind": 0.499403,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 162,
+    "mission_id": 7,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 13,
+    "last_time_to_tca_days": 2.304,
+    "last_risk": -6.5424,
+    "max_risk_estimate": -6.3846,
+    "dilution_gap": 0.1578,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.57229,
+    "S1_score": -3.9728,
+    "S2_score": -0.8517,
+    "p_rf": 0.091,
+    "p_hgb": 0.128,
+    "p_et": 0.1058,
+    "p_lgb": 0.127008,
+    "miss_distance_m": 30350.0,
+    "mahalanobis_distance": 45.92,
+    "relative_speed_ms": 11611.0,
+    "rel_pos_r_m": 1595.5,
+    "rel_pos_t_m": 20848.8,
+    "rel_pos_n_m": 22854.9,
+    "rel_vel_r_ms": 476.7,
+    "rel_vel_t_ms": -8586.8,
+    "rel_vel_n_ms": 7800.4,
+    "t_sma_km": 6874.19,
+    "t_ecc": 0.002344,
+    "t_inc_deg": 87.663,
+    "c_sma_km": 7434.08,
+    "c_ecc": 0.096716,
+    "c_inc_deg": 56.827,
+    "t_sigma_r_m": 6.3,
+    "t_sigma_t_m": 38.81,
+    "t_sigma_n_m": 1.81,
+    "c_sigma_r_m": 3990.94,
+    "c_sigma_t_m": 62089.7,
+    "c_sigma_n_m": 722.09,
+    "c_obs_used": 15,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.304,
+        "r": -6.5424,
+        "m": -6.3846
+      }
+    ],
+    "p_s2_risk_blind": 0.299067,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 180,
+    "mission_id": 15,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.284,
+    "last_risk": -5.7153,
+    "max_risk_estimate": -5.4206,
+    "dilution_gap": 0.2948,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.70251,
+    "S1_score": -2.279,
+    "S2_score": -0.4523,
+    "p_rf": 0.2383,
+    "p_hgb": 0.6728,
+    "p_et": 0.3334,
+    "p_lgb": 0.866605,
+    "miss_distance_m": 1282.0,
+    "mahalanobis_distance": 3.24,
+    "relative_speed_ms": 14869.0,
+    "rel_pos_r_m": -727.7,
+    "rel_pos_t_m": 134.8,
+    "rel_pos_n_m": -1153.0,
+    "rel_vel_r_ms": -18.0,
+    "rel_vel_t_ms": -14776.6,
+    "rel_vel_n_ms": -1660.8,
+    "t_sma_km": 7087.06,
+    "t_ecc": 0.003373,
+    "t_inc_deg": 92.077,
+    "c_sma_km": 7112.99,
+    "c_ecc": 0.002407,
+    "c_inc_deg": 83.048,
+    "t_sigma_r_m": 3.69,
+    "t_sigma_t_m": 30.29,
+    "t_sigma_n_m": 2.28,
+    "c_sigma_r_m": 1479.39,
+    "c_sigma_t_m": 16647.61,
+    "c_sigma_n_m": 482.71,
+    "c_obs_used": 20,
+    "f10_solar_flux": 101.0,
+    "cdm_series": [
+      {
+        "t": 2.284,
+        "r": -5.7153,
+        "m": -5.4206
+      }
+    ],
+    "p_s2_risk_blind": 0.388813,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 193,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 10,
+    "last_time_to_tca_days": 2.133,
+    "last_risk": -6.0329,
+    "max_risk_estimate": -4.9851,
+    "dilution_gap": 1.0479,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.88656,
+    "S1_score": -2.9973,
+    "S2_score": -1.174,
+    "p_rf": 0.2053,
+    "p_hgb": 0.5174,
+    "p_et": 0.2254,
+    "p_lgb": 0.507503,
+    "miss_distance_m": 3442.0,
+    "mahalanobis_distance": 59.0,
+    "relative_speed_ms": 12041.0,
+    "rel_pos_r_m": 605.7,
+    "rel_pos_t_m": 1772.5,
+    "rel_pos_n_m": 2391.1,
+    "rel_vel_r_ms": -72.3,
+    "rel_vel_t_ms": -9656.2,
+    "rel_vel_n_ms": 7193.5,
+    "t_sma_km": 7062.69,
+    "t_ecc": 0.000623,
+    "t_inc_deg": 98.15,
+    "c_sma_km": 7060.58,
+    "c_ecc": 0.009857,
+    "c_inc_deg": 99.342,
+    "t_sigma_r_m": 1.37,
+    "t_sigma_t_m": 34.83,
+    "t_sigma_n_m": 1.35,
+    "c_sigma_r_m": 354.7,
+    "c_sigma_t_m": 2202.63,
+    "c_sigma_n_m": 95.07,
+    "c_obs_used": 21,
+    "f10_solar_flux": 92.0,
+    "cdm_series": [
+      {
+        "t": 2.133,
+        "r": -6.0329,
+        "m": -4.9851
+      }
+    ],
+    "p_s2_risk_blind": 0.236141,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 207,
+    "mission_id": 18,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 8,
+    "last_time_to_tca_days": 2.062,
+    "last_risk": -3.9237,
+    "max_risk_estimate": -3.4439,
+    "dilution_gap": 0.4798,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.10834,
+    "S1_score": -0.7493,
+    "S2_score": 0.4337,
+    "p_rf": 0.535,
+    "p_hgb": 0.8115,
+    "p_et": 0.6139,
+    "p_lgb": 0.95376,
+    "miss_distance_m": 162.0,
+    "mahalanobis_distance": 0.54,
+    "relative_speed_ms": 2946.0,
+    "rel_pos_r_m": -61.1,
+    "rel_pos_t_m": 1823.5,
+    "rel_pos_n_m": 366.4,
+    "rel_vel_r_ms": 11.3,
+    "rel_vel_t_ms": -581.0,
+    "rel_vel_n_ms": 2888.4,
+    "t_sma_km": 7186.7,
+    "t_ecc": 0.00286,
+    "t_inc_deg": 98.748,
+    "c_sma_km": 7193.26,
+    "c_ecc": 0.002758,
+    "c_inc_deg": 99.134,
+    "t_sigma_r_m": 6.38,
+    "t_sigma_t_m": 63.53,
+    "t_sigma_n_m": 2.29,
+    "c_sigma_r_m": 125.89,
+    "c_sigma_t_m": 6626.49,
+    "c_sigma_n_m": 135.52,
+    "c_obs_used": 30,
+    "f10_solar_flux": 78.0,
+    "cdm_series": [
+      {
+        "t": 2.062,
+        "r": -3.9237,
+        "m": -3.4439
+      }
+    ],
+    "p_s2_risk_blind": 0.606763,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 214,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 7,
+    "last_time_to_tca_days": 2.112,
+    "last_risk": -5.8077,
+    "max_risk_estimate": -5.5564,
+    "dilution_gap": 0.2513,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.78567,
+    "S1_score": -2.1981,
+    "S2_score": -0.177,
+    "p_rf": 0.6781,
+    "p_hgb": 0.8488,
+    "p_et": 0.6934,
+    "p_lgb": 0.892748,
+    "miss_distance_m": 1704.0,
+    "mahalanobis_distance": 1.27,
+    "relative_speed_ms": 4772.0,
+    "rel_pos_r_m": -515.0,
+    "rel_pos_t_m": 1370.3,
+    "rel_pos_n_m": 461.3,
+    "rel_vel_r_ms": 82.8,
+    "rel_vel_t_ms": -1492.4,
+    "rel_vel_n_ms": 4532.1,
+    "t_sma_km": 7165.23,
+    "t_ecc": 0.001307,
+    "t_inc_deg": 98.509,
+    "c_sma_km": 7229.98,
+    "c_ecc": 0.015609,
+    "c_inc_deg": 70.898,
+    "t_sigma_r_m": 4.11,
+    "t_sigma_t_m": 43.2,
+    "t_sigma_n_m": 3.91,
+    "c_sigma_r_m": 693.78,
+    "c_sigma_t_m": 5540.28,
+    "c_sigma_n_m": 1222.53,
+    "c_obs_used": 15,
+    "f10_solar_flux": 97.0,
+    "cdm_series": [
+      {
+        "t": 2.112,
+        "r": -5.8077,
+        "m": -5.5564
+      }
+    ],
+    "p_s2_risk_blind": 0.455864,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 234,
+    "mission_id": 2,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 13,
+    "last_time_to_tca_days": 2.231,
+    "last_risk": -5.4503,
+    "max_risk_estimate": -4.7438,
+    "dilution_gap": 0.7065,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.46401,
+    "S1_score": -2.3698,
+    "S2_score": -1.5795,
+    "p_rf": 0.3007,
+    "p_hgb": 0.6387,
+    "p_et": 0.2719,
+    "p_lgb": 0.72364,
+    "miss_distance_m": 7507.0,
+    "mahalanobis_distance": 21.26,
+    "relative_speed_ms": 2495.0,
+    "rel_pos_r_m": 5.1,
+    "rel_pos_t_m": 6977.1,
+    "rel_pos_n_m": 1232.4,
+    "rel_vel_r_ms": -1.3,
+    "rel_vel_t_ms": -433.8,
+    "rel_vel_n_ms": 2457.2,
+    "t_sma_km": 7158.75,
+    "t_ecc": 0.000874,
+    "t_inc_deg": 98.475,
+    "c_sma_km": 7127.12,
+    "c_ecc": 0.004934,
+    "c_inc_deg": 89.72,
+    "t_sigma_r_m": 4.75,
+    "t_sigma_t_m": 69.49,
+    "t_sigma_n_m": 3.1,
+    "c_sigma_r_m": 44.48,
+    "c_sigma_t_m": 3054.38,
+    "c_sigma_n_m": 70.06,
+    "c_obs_used": 24,
+    "f10_solar_flux": 67.0,
+    "cdm_series": [
+      {
+        "t": 2.231,
+        "r": -5.4503,
+        "m": -4.7438
+      }
+    ],
+    "p_s2_risk_blind": 0.170864,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 239,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 6,
+    "last_time_to_tca_days": 2.32,
+    "last_risk": -5.2084,
+    "max_risk_estimate": -4.3342,
+    "dilution_gap": 0.8742,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.07186,
+    "S1_score": -1.769,
+    "S2_score": -0.0341,
+    "p_rf": 0.4886,
+    "p_hgb": 0.817,
+    "p_et": 0.6367,
+    "p_lgb": 0.912958,
+    "miss_distance_m": 486.0,
+    "mahalanobis_distance": 0.42,
+    "relative_speed_ms": 14741.0,
+    "rel_pos_r_m": 93.3,
+    "rel_pos_t_m": -84.8,
+    "rel_pos_n_m": -502.4,
+    "rel_vel_r_ms": 10.8,
+    "rel_vel_t_ms": -14552.8,
+    "rel_vel_n_ms": 2349.0,
+    "t_sma_km": 7172.74,
+    "t_ecc": 0.001411,
+    "t_inc_deg": 98.564,
+    "c_sma_km": 7199.27,
+    "c_ecc": 0.004257,
+    "c_inc_deg": 99.485,
+    "t_sigma_r_m": 4.41,
+    "t_sigma_t_m": 56.62,
+    "t_sigma_n_m": 3.69,
+    "c_sigma_r_m": 395.75,
+    "c_sigma_t_m": 11277.09,
+    "c_sigma_n_m": 1585.06,
+    "c_obs_used": 21,
+    "f10_solar_flux": 111.0,
+    "cdm_series": [
+      {
+        "t": 2.32,
+        "r": -5.2084,
+        "m": -4.3342
+      }
+    ],
+    "p_s2_risk_blind": 0.491477,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 247,
+    "mission_id": 3,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.097,
+    "last_risk": -6.2701,
+    "max_risk_estimate": -4.5983,
+    "dilution_gap": 1.6719,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.81292,
+    "S1_score": -3.51,
+    "S2_score": -0.9775,
+    "p_rf": 0.0913,
+    "p_hgb": 0.286,
+    "p_et": 0.2157,
+    "p_lgb": 0.292758,
+    "miss_distance_m": 854.0,
+    "mahalanobis_distance": 43.9,
+    "relative_speed_ms": 14610.0,
+    "rel_pos_r_m": -18.3,
+    "rel_pos_t_m": 151.5,
+    "rel_pos_n_m": 751.4,
+    "rel_vel_r_ms": -29.8,
+    "rel_vel_t_ms": -14322.3,
+    "rel_vel_n_ms": 2889.2,
+    "t_sma_km": 7179.93,
+    "t_ecc": 0.001349,
+    "t_inc_deg": 98.663,
+    "c_sma_km": 7176.39,
+    "c_ecc": 0.005283,
+    "c_inc_deg": 99.275,
+    "t_sigma_r_m": 1.89,
+    "t_sigma_t_m": 30.14,
+    "t_sigma_n_m": 1.63,
+    "c_sigma_r_m": 46.31,
+    "c_sigma_t_m": 1172.74,
+    "c_sigma_n_m": 41.16,
+    "c_obs_used": 27,
+    "f10_solar_flux": 72.0,
+    "cdm_series": [
+      {
+        "t": 2.097,
+        "r": -6.2701,
+        "m": -4.5983
+      }
+    ],
+    "p_s2_risk_blind": 0.273383,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 253,
+    "mission_id": 15,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.042,
+    "last_risk": -7.2941,
+    "max_risk_estimate": -4.5137,
+    "dilution_gap": 2.7804,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -4.789,
+    "S2_score": -1.9421,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.055767,
+    "miss_distance_m": 1832.0,
+    "mahalanobis_distance": 51.13,
+    "relative_speed_ms": 12106.0,
+    "rel_pos_r_m": 42.1,
+    "rel_pos_t_m": -20.6,
+    "rel_pos_n_m": 28.3,
+    "rel_vel_r_ms": 6.7,
+    "rel_vel_t_ms": -9785.8,
+    "rel_vel_n_ms": -7128.4,
+    "t_sma_km": 7085.74,
+    "t_ecc": 0.001134,
+    "t_inc_deg": 91.963,
+    "c_sma_km": 7055.37,
+    "c_ecc": 0.004134,
+    "c_inc_deg": 73.944,
+    "t_sigma_r_m": 3.18,
+    "t_sigma_t_m": 28.79,
+    "t_sigma_n_m": 1.26,
+    "c_sigma_r_m": 17.5,
+    "c_sigma_t_m": 763.25,
+    "c_sigma_n_m": 10.01,
+    "c_obs_used": 89,
+    "f10_solar_flux": 69.0,
+    "cdm_series": [
+      {
+        "t": 2.05,
+        "r": -7.2941,
+        "m": -4.5137
+      }
+    ],
+    "p_s2_risk_blind": 0.12542,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 258,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 2,
+    "last_time_to_tca_days": 2.28,
+    "last_risk": -4.0402,
+    "max_risk_estimate": -4.0398,
+    "dilution_gap": 0.0004,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.19571,
+    "S1_score": -0.9192,
+    "S2_score": -0.2465,
+    "p_rf": 0.2148,
+    "p_hgb": 0.7576,
+    "p_et": 0.4199,
+    "p_lgb": 0.905428,
+    "miss_distance_m": 1132.0,
+    "mahalanobis_distance": 8.11,
+    "relative_speed_ms": 10446.0,
+    "rel_pos_r_m": -222.6,
+    "rel_pos_t_m": 948.0,
+    "rel_pos_n_m": 922.0,
+    "rel_vel_r_ms": 140.4,
+    "rel_vel_t_ms": -7257.4,
+    "rel_vel_n_ms": 7513.0,
+    "t_sma_km": 7062.19,
+    "t_ecc": 0.000566,
+    "t_inc_deg": 98.208,
+    "c_sma_km": 7079.42,
+    "c_ecc": 0.018629,
+    "c_inc_deg": 98.698,
+    "t_sigma_r_m": 1.53,
+    "t_sigma_t_m": 17.11,
+    "t_sigma_n_m": 1.95,
+    "c_sigma_r_m": 318.8,
+    "c_sigma_t_m": 1170.0,
+    "c_sigma_n_m": 308.51,
+    "c_obs_used": 21,
+    "f10_solar_flux": 72.0,
+    "cdm_series": [
+      {
+        "t": 2.28,
+        "r": -4.0402,
+        "m": -4.0398
+      }
+    ],
+    "p_s2_risk_blind": 0.438686,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 276,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z1: HardLock (LR >= -5.25)",
+    "action_tag": "LOCKED_ALARM",
+    "n_allowed_cdms": 8,
+    "last_time_to_tca_days": 2.184,
+    "last_risk": -5.0969,
+    "max_risk_estimate": -3.4832,
+    "dilution_gap": 1.6137,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -4.98824,
+    "S1_score": -1.8104,
+    "S2_score": -0.4298,
+    "p_rf": 0.1808,
+    "p_hgb": 0.3196,
+    "p_et": 0.2853,
+    "p_lgb": 0.875102,
+    "miss_distance_m": 422.0,
+    "mahalanobis_distance": 10.28,
+    "relative_speed_ms": 14888.0,
+    "rel_pos_r_m": -62.3,
+    "rel_pos_t_m": 46.7,
+    "rel_pos_n_m": -410.5,
+    "rel_vel_r_ms": 4.7,
+    "rel_vel_t_ms": -14792.0,
+    "rel_vel_n_ms": -1690.5,
+    "t_sma_km": 7063.97,
+    "t_ecc": 0.00255,
+    "t_inc_deg": 98.204,
+    "c_sma_km": 7063.54,
+    "c_ecc": 0.002708,
+    "c_inc_deg": 86.384,
+    "t_sigma_r_m": 2.82,
+    "t_sigma_t_m": 45.43,
+    "t_sigma_n_m": 1.25,
+    "c_sigma_r_m": 72.64,
+    "c_sigma_t_m": 1240.85,
+    "c_sigma_n_m": 111.28,
+    "c_obs_used": 15,
+    "f10_solar_flux": 69.0,
+    "cdm_series": [
+      {
+        "t": 2.184,
+        "r": -5.0969,
+        "m": -3.4832
+      }
+    ],
+    "p_s2_risk_blind": 0.394177,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 280,
+    "mission_id": 15,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.084,
+    "last_risk": -7.1554,
+    "max_risk_estimate": -6.7305,
+    "dilution_gap": 0.4249,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -4.3426,
+    "S2_score": -0.5383,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.157566,
+    "miss_distance_m": 2227.0,
+    "mahalanobis_distance": 10.51,
+    "relative_speed_ms": 4494.0,
+    "rel_pos_r_m": 19.8,
+    "rel_pos_t_m": -2090.5,
+    "rel_pos_n_m": -659.9,
+    "rel_vel_r_ms": -5.5,
+    "rel_vel_t_ms": -1352.4,
+    "rel_vel_n_ms": 4286.2,
+    "t_sma_km": 7085.22,
+    "t_ecc": 0.003081,
+    "t_inc_deg": 91.939,
+    "c_sma_km": 7082.01,
+    "c_ecc": 0.003489,
+    "c_inc_deg": 98.476,
+    "t_sigma_r_m": 3.13,
+    "t_sigma_t_m": 24.89,
+    "t_sigma_n_m": 1.5,
+    "c_sigma_r_m": 195.83,
+    "c_sigma_t_m": 25681.93,
+    "c_sigma_n_m": 170.48,
+    "c_obs_used": 21,
+    "f10_solar_flux": 70.0,
+    "cdm_series": [
+      {
+        "t": 2.084,
+        "r": -7.1554,
+        "m": -6.7305
+      }
+    ],
+    "p_s2_risk_blind": 0.368583,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 447,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.048,
+    "last_risk": -5.3278,
+    "max_risk_estimate": -4.2129,
+    "dilution_gap": 1.1149,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.35376,
+    "S1_score": -2.0019,
+    "S2_score": -0.5667,
+    "p_rf": 0.056,
+    "p_hgb": 0.12,
+    "p_et": 0.1177,
+    "p_lgb": 0.879529,
+    "miss_distance_m": 455.0,
+    "mahalanobis_distance": 4.6,
+    "relative_speed_ms": 3775.0,
+    "rel_pos_r_m": -65.6,
+    "rel_pos_t_m": -488.5,
+    "rel_pos_n_m": 125.4,
+    "rel_vel_r_ms": -23.7,
+    "rel_vel_t_ms": -935.7,
+    "rel_vel_n_ms": -3657.6,
+    "t_sma_km": 7155.38,
+    "t_ecc": 0.00052,
+    "t_inc_deg": 98.61,
+    "c_sma_km": 7193.17,
+    "c_ecc": 0.005705,
+    "c_inc_deg": 99.008,
+    "t_sigma_r_m": 3.81,
+    "t_sigma_t_m": 26.85,
+    "t_sigma_n_m": 1.37,
+    "c_sigma_r_m": 27.07,
+    "c_sigma_t_m": 1178.3,
+    "c_sigma_n_m": 25.93,
+    "c_obs_used": 62,
+    "f10_solar_flux": 76.0,
+    "cdm_series": [
+      {
+        "t": 2.05,
+        "r": -5.3278,
+        "m": -4.2129
+      }
+    ],
+    "p_s2_risk_blind": 0.362004,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 463,
+    "mission_id": 16,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.389,
+    "last_risk": -8.7617,
+    "max_risk_estimate": -5.0622,
+    "dilution_gap": 3.6995,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -5.3229,
+    "S2_score": -1.0401,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.18346,
+    "miss_distance_m": 138.0,
+    "mahalanobis_distance": 5.51,
+    "relative_speed_ms": 4106.0,
+    "rel_pos_r_m": -104.6,
+    "rel_pos_t_m": 59.9,
+    "rel_pos_n_m": 16.5,
+    "rel_vel_r_ms": 11.4,
+    "rel_vel_t_ms": -1105.4,
+    "rel_vel_n_ms": 3955.2,
+    "t_sma_km": 7195.24,
+    "t_ecc": 0.001871,
+    "t_inc_deg": 98.595,
+    "c_sma_km": 7247.43,
+    "c_ecc": 0.008507,
+    "c_inc_deg": 71.015,
+    "t_sigma_r_m": 4.25,
+    "t_sigma_t_m": 46.79,
+    "t_sigma_n_m": 4.18,
+    "c_sigma_r_m": 20.27,
+    "c_sigma_t_m": 184.57,
+    "c_sigma_n_m": 46.82,
+    "c_obs_used": 29,
+    "f10_solar_flux": 85.0,
+    "cdm_series": [
+      {
+        "t": 2.389,
+        "r": -8.7617,
+        "m": -5.0622
+      }
+    ],
+    "p_s2_risk_blind": 0.261133,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 587,
+    "mission_id": 6,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 3,
+    "last_time_to_tca_days": 2.218,
+    "last_risk": -11.084,
+    "max_risk_estimate": -6.7964,
+    "dilution_gap": 4.2876,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -6.5729,
+    "S2_score": -0.0389,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.091843,
+    "miss_distance_m": 8843.0,
+    "mahalanobis_distance": 67.2,
+    "relative_speed_ms": 15289.0,
+    "rel_pos_r_m": -559.4,
+    "rel_pos_t_m": -367.3,
+    "rel_pos_n_m": -5478.0,
+    "rel_vel_r_ms": 246.4,
+    "rel_vel_t_ms": -15254.8,
+    "rel_vel_n_ms": 989.2,
+    "t_sma_km": 6803.38,
+    "t_ecc": 0.000989,
+    "t_inc_deg": 87.241,
+    "c_sma_km": 6833.56,
+    "c_ecc": 0.031402,
+    "c_inc_deg": 95.96,
+    "t_sigma_r_m": 2.19,
+    "t_sigma_t_m": 263.67,
+    "t_sigma_n_m": 1.69,
+    "c_sigma_r_m": 6125.81,
+    "c_sigma_t_m": 229664.13,
+    "c_sigma_n_m": 142.29,
+    "c_obs_used": 34,
+    "f10_solar_flux": 67.0,
+    "cdm_series": [
+      {
+        "t": 2.218,
+        "r": -11.084,
+        "m": -6.7964
+      }
+    ],
+    "p_s2_risk_blind": 0.490265,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 641,
+    "mission_id": 7,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 13,
+    "last_time_to_tca_days": 2.244,
+    "last_risk": -10.0485,
+    "max_risk_estimate": -5.4086,
+    "dilution_gap": 4.6399,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -6.6144,
+    "S2_score": -1.3629,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.045033,
+    "miss_distance_m": 7111.0,
+    "mahalanobis_distance": 36.03,
+    "relative_speed_ms": 11446.0,
+    "rel_pos_r_m": -36.7,
+    "rel_pos_t_m": -393.8,
+    "rel_pos_n_m": -446.4,
+    "rel_vel_r_ms": 89.4,
+    "rel_vel_t_ms": -8578.2,
+    "rel_vel_n_ms": 7577.7,
+    "t_sma_km": 6869.62,
+    "t_ecc": 0.003249,
+    "t_inc_deg": 87.723,
+    "c_sma_km": 6959.9,
+    "c_ecc": 0.015296,
+    "c_inc_deg": 82.065,
+    "t_sigma_r_m": 6.58,
+    "t_sigma_t_m": 146.55,
+    "t_sigma_n_m": 1.82,
+    "c_sigma_r_m": 65.97,
+    "c_sigma_t_m": 7369.64,
+    "c_sigma_n_m": 38.89,
+    "c_obs_used": 52,
+    "f10_solar_flux": 78.0,
+    "cdm_series": [
+      {
+        "t": 2.244,
+        "r": -10.0485,
+        "m": -5.4086
+      }
+    ],
+    "p_s2_risk_blind": 0.203763,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 657,
+    "mission_id": 15,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.163,
+    "last_risk": -6.157,
+    "max_risk_estimate": -6.0722,
+    "dilution_gap": 0.0848,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.8975,
+    "S1_score": -3.4911,
+    "S2_score": -1.2002,
+    "p_rf": 0.0495,
+    "p_hgb": 0.1988,
+    "p_et": 0.0912,
+    "p_lgb": 0.256329,
+    "miss_distance_m": 7916.0,
+    "mahalanobis_distance": 91.29,
+    "relative_speed_ms": 13387.0,
+    "rel_pos_r_m": 662.3,
+    "rel_pos_t_m": -4570.6,
+    "rel_pos_n_m": 9028.6,
+    "rel_vel_r_ms": -14.5,
+    "rel_vel_t_ms": -11946.2,
+    "rel_vel_n_ms": -6041.6,
+    "t_sma_km": 7085.23,
+    "t_ecc": 0.001316,
+    "t_inc_deg": 91.931,
+    "c_sma_km": 7105.9,
+    "c_ecc": 0.002523,
+    "c_inc_deg": 99.113,
+    "t_sigma_r_m": 4.29,
+    "t_sigma_t_m": 32.12,
+    "t_sigma_n_m": 2.15,
+    "c_sigma_r_m": 243.78,
+    "c_sigma_t_m": 14951.88,
+    "c_sigma_n_m": 81.94,
+    "c_obs_used": 26,
+    "f10_solar_flux": 66.0,
+    "cdm_series": [
+      {
+        "t": 2.163,
+        "r": -6.157,
+        "m": -6.0722
+      }
+    ],
+    "p_s2_risk_blind": 0.231434,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 666,
+    "mission_id": 6,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 4,
+    "last_time_to_tca_days": 2.278,
+    "last_risk": -5.7721,
+    "max_risk_estimate": -5.3461,
+    "dilution_gap": 0.426,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.75363,
+    "S1_score": -2.2561,
+    "S2_score": -0.2686,
+    "p_rf": 0.0194,
+    "p_hgb": 0.115,
+    "p_et": 0.0135,
+    "p_lgb": 0.876642,
+    "miss_distance_m": 11316.0,
+    "mahalanobis_distance": 8.37,
+    "relative_speed_ms": 3622.0,
+    "rel_pos_r_m": 42.5,
+    "rel_pos_t_m": 10369.0,
+    "rel_pos_n_m": -2510.0,
+    "rel_vel_r_ms": 19.8,
+    "rel_vel_t_ms": -851.9,
+    "rel_vel_n_ms": -3520.4,
+    "t_sma_km": 6814.47,
+    "t_ecc": 0.001179,
+    "t_inc_deg": 87.285,
+    "c_sma_km": 6824.82,
+    "c_ecc": 0.003296,
+    "c_inc_deg": 73.86,
+    "t_sigma_r_m": 5.65,
+    "t_sigma_t_m": 743.73,
+    "t_sigma_n_m": 3.65,
+    "c_sigma_r_m": 44.77,
+    "c_sigma_t_m": 19445.78,
+    "c_sigma_n_m": 15.38,
+    "c_obs_used": 36,
+    "f10_solar_flux": 108.0,
+    "cdm_series": [
+      {
+        "t": 2.278,
+        "r": -5.7721,
+        "m": -5.3461
+      }
+    ],
+    "p_s2_risk_blind": 0.433241,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 679,
+    "mission_id": 5,
+    "c_object_type": "DEBRIS",
+    "zone": "Z4-Z6: Below Gate (LR < -7.0)",
+    "action_tag": "CLEAR_SAFE",
+    "n_allowed_cdms": 3,
+    "last_time_to_tca_days": 2.086,
+    "last_risk": -7.0584,
+    "max_risk_estimate": -6.9481,
+    "dilution_gap": 0.1104,
+    "b0_pred": 0,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -3.9709,
+    "S2_score": -0.0568,
+    "p_rf": 0.0001,
+    "p_hgb": 0.0001,
+    "p_et": 0.0001,
+    "p_lgb": 0.2362,
+    "miss_distance_m": 1204.0,
+    "mahalanobis_distance": 3.44,
+    "relative_speed_ms": 2146.0,
+    "rel_pos_r_m": -26.7,
+    "rel_pos_t_m": 447.9,
+    "rel_pos_n_m": -62.7,
+    "rel_vel_r_ms": 36.7,
+    "rel_vel_t_ms": -294.6,
+    "rel_vel_n_ms": -2125.9,
+    "t_sma_km": 6995.72,
+    "t_ecc": 0.00329,
+    "t_inc_deg": 97.8,
+    "c_sma_km": 7017.2,
+    "c_ecc": 0.006292,
+    "c_inc_deg": 99.041,
+    "t_sigma_r_m": 5.31,
+    "t_sigma_t_m": 107.65,
+    "t_sigma_n_m": 1.53,
+    "c_sigma_r_m": 242.46,
+    "c_sigma_t_m": 34722.9,
+    "c_sigma_n_m": 53.17,
+    "c_obs_used": 26,
+    "f10_solar_flux": 82.0,
+    "cdm_series": [
+      {
+        "t": 2.086,
+        "r": -7.0584,
+        "m": -6.9481
+      }
+    ],
+    "p_s2_risk_blind": 0.485814,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 735,
+    "mission_id": 5,
+    "c_object_type": "DEBRIS",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.199,
+    "last_risk": -6.0524,
+    "max_risk_estimate": -5.2442,
+    "dilution_gap": 0.8082,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.95,
+    "S1_score": -3.3371,
+    "S2_score": -0.941,
+    "p_rf": 0.1625,
+    "p_hgb": 0.2846,
+    "p_et": 0.2621,
+    "p_lgb": 0.312157,
+    "miss_distance_m": 310.0,
+    "mahalanobis_distance": 3.75,
+    "relative_speed_ms": 14571.0,
+    "rel_pos_r_m": 112.2,
+    "rel_pos_t_m": 72.4,
+    "rel_pos_n_m": 254.8,
+    "rel_vel_r_ms": -108.3,
+    "rel_vel_t_ms": -14017.3,
+    "rel_vel_n_ms": 3978.7,
+    "t_sma_km": 7000.09,
+    "t_ecc": 0.003535,
+    "t_inc_deg": 97.904,
+    "c_sma_km": 7162.15,
+    "c_ecc": 0.026327,
+    "c_inc_deg": 97.677,
+    "t_sigma_r_m": 5.04,
+    "t_sigma_t_m": 55.44,
+    "t_sigma_n_m": 2.17,
+    "c_sigma_r_m": 104.28,
+    "c_sigma_t_m": 994.32,
+    "c_sigma_n_m": 92.16,
+    "c_obs_used": 15,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.199,
+        "r": -6.0524,
+        "m": -5.2442
+      }
+    ],
+    "p_s2_risk_blind": 0.280699,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 782,
+    "mission_id": 15,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.351,
+    "last_risk": -5.7768,
+    "max_risk_estimate": -4.9481,
+    "dilution_gap": 0.8287,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.75786,
+    "S1_score": -2.5466,
+    "S2_score": -1.019,
+    "p_rf": 0.06,
+    "p_hgb": 0.1422,
+    "p_et": 0.1071,
+    "p_lgb": 0.756265,
+    "miss_distance_m": 1041.0,
+    "mahalanobis_distance": 13.09,
+    "relative_speed_ms": 2957.0,
+    "rel_pos_r_m": -67.9,
+    "rel_pos_t_m": -1766.2,
+    "rel_pos_n_m": -357.6,
+    "rel_vel_r_ms": -16.3,
+    "rel_vel_t_ms": -587.1,
+    "rel_vel_n_ms": 2898.7,
+    "t_sma_km": 7085.52,
+    "t_ecc": 0.002224,
+    "t_inc_deg": 91.948,
+    "c_sma_km": 7080.32,
+    "c_ecc": 0.003993,
+    "c_inc_deg": 86.302,
+    "t_sigma_r_m": 2.53,
+    "t_sigma_t_m": 35.65,
+    "t_sigma_n_m": 1.17,
+    "c_sigma_r_m": 29.94,
+    "c_sigma_t_m": 2284.49,
+    "c_sigma_n_m": 10.1,
+    "c_obs_used": 69,
+    "f10_solar_flux": 73.0,
+    "cdm_series": [
+      {
+        "t": 2.351,
+        "r": -5.7768,
+        "m": -4.9481
+      }
+    ],
+    "p_s2_risk_blind": 0.26522,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 873,
+    "mission_id": 19,
+    "c_object_type": "DEBRIS",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.1,
+    "last_risk": -6.0116,
+    "max_risk_estimate": -5.7354,
+    "dilution_gap": 0.2762,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.95,
+    "S1_score": -2.7965,
+    "S2_score": -0.3389,
+    "p_rf": 0.2172,
+    "p_hgb": 0.6911,
+    "p_et": 0.223,
+    "p_lgb": 0.707005,
+    "miss_distance_m": 1053.0,
+    "mahalanobis_distance": 2.96,
+    "relative_speed_ms": 4772.0,
+    "rel_pos_r_m": -87.6,
+    "rel_pos_t_m": -1071.7,
+    "rel_pos_n_m": 357.7,
+    "rel_vel_r_ms": -12.5,
+    "rel_vel_t_ms": -1511.3,
+    "rel_vel_n_ms": -4527.2,
+    "t_sma_km": 7089.68,
+    "t_ecc": 0.003029,
+    "t_inc_deg": 98.161,
+    "c_sma_km": 7112.48,
+    "c_ecc": 0.002544,
+    "c_inc_deg": 73.979,
+    "t_sigma_r_m": 8.55,
+    "t_sigma_t_m": 52.3,
+    "t_sigma_n_m": 5.0,
+    "c_sigma_r_m": 52.23,
+    "c_sigma_t_m": 2729.9,
+    "c_sigma_n_m": 114.85,
+    "c_obs_used": 24,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.1,
+        "r": -6.0116,
+        "m": -5.7354
+      }
+    ],
+    "p_s2_risk_blind": 0.416069,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 885,
+    "mission_id": 2,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "VETOED_SAFE",
+    "n_allowed_cdms": 12,
+    "last_time_to_tca_days": 2.359,
+    "last_risk": -5.8861,
+    "max_risk_estimate": -4.2337,
+    "dilution_gap": 1.6523,
+    "b0_pred": 1,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -2.8804,
+    "S2_score": -1.0224,
+    "p_rf": 0.079,
+    "p_hgb": 0.1259,
+    "p_et": 0.2183,
+    "p_lgb": 0.5455,
+    "miss_distance_m": 1121.0,
+    "mahalanobis_distance": 10.12,
+    "relative_speed_ms": 3289.0,
+    "rel_pos_r_m": 143.5,
+    "rel_pos_t_m": 1390.5,
+    "rel_pos_n_m": 312.6,
+    "rel_vel_r_ms": -27.6,
+    "rel_vel_t_ms": -717.1,
+    "rel_vel_n_ms": 3209.7,
+    "t_sma_km": 7163.44,
+    "t_ecc": 0.001575,
+    "t_inc_deg": 98.637,
+    "c_sma_km": 7181.09,
+    "c_ecc": 0.003277,
+    "c_inc_deg": 81.353,
+    "t_sigma_r_m": 4.14,
+    "t_sigma_t_m": 39.9,
+    "t_sigma_n_m": 2.27,
+    "c_sigma_r_m": 26.57,
+    "c_sigma_t_m": 906.84,
+    "c_sigma_n_m": 39.05,
+    "c_obs_used": 57,
+    "f10_solar_flux": 67.0,
+    "cdm_series": [
+      {
+        "t": 2.359,
+        "r": -5.8861,
+        "m": -4.2337
+      }
+    ],
+    "p_s2_risk_blind": 0.264558,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 1051,
+    "mission_id": 5,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 13,
+    "last_time_to_tca_days": 2.919,
+    "last_risk": -6.2304,
+    "max_risk_estimate": -5.7844,
+    "dilution_gap": 0.446,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.80563,
+    "S1_score": -3.2733,
+    "S2_score": -0.4509,
+    "p_rf": 0.0952,
+    "p_hgb": 0.0765,
+    "p_et": 0.2208,
+    "p_lgb": 0.421704,
+    "miss_distance_m": 1632.0,
+    "mahalanobis_distance": 9.62,
+    "relative_speed_ms": 14844.0,
+    "rel_pos_r_m": 334.8,
+    "rel_pos_t_m": -71.9,
+    "rel_pos_n_m": -399.8,
+    "rel_vel_r_ms": 50.4,
+    "rel_vel_t_ms": -14614.3,
+    "rel_vel_n_ms": 2603.1,
+    "t_sma_km": 6999.11,
+    "t_ecc": 0.003187,
+    "t_inc_deg": 97.783,
+    "c_sma_km": 7050.96,
+    "c_ecc": 0.006917,
+    "c_inc_deg": 74.08,
+    "t_sigma_r_m": 6.54,
+    "t_sigma_t_m": 77.91,
+    "t_sigma_n_m": 1.72,
+    "c_sigma_r_m": 305.83,
+    "c_sigma_t_m": 36144.45,
+    "c_sigma_n_m": 345.82,
+    "c_obs_used": 15,
+    "f10_solar_flux": 68.0,
+    "cdm_series": [
+      {
+        "t": 2.919,
+        "r": -6.2304,
+        "m": -5.7844
+      }
+    ],
+    "p_s2_risk_blind": 0.389152,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 1197,
+    "mission_id": 15,
+    "c_object_type": "DEBRIS",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 4,
+    "last_time_to_tca_days": 2.158,
+    "last_risk": -6.2369,
+    "max_risk_estimate": -5.95,
+    "dilution_gap": 0.2869,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.51567,
+    "S1_score": -3.3497,
+    "S2_score": -0.8593,
+    "p_rf": 0.0821,
+    "p_hgb": 0.2639,
+    "p_et": 0.1516,
+    "p_lgb": 0.326464,
+    "miss_distance_m": 3604.0,
+    "mahalanobis_distance": 9.14,
+    "relative_speed_ms": 13326.0,
+    "rel_pos_r_m": -482.8,
+    "rel_pos_t_m": 167.8,
+    "rel_pos_n_m": -336.1,
+    "rel_vel_r_ms": 33.9,
+    "rel_vel_t_ms": -11844.7,
+    "rel_vel_n_ms": -6108.5,
+    "t_sma_km": 7084.34,
+    "t_ecc": 0.000555,
+    "t_inc_deg": 91.943,
+    "c_sma_km": 7068.65,
+    "c_ecc": 0.004482,
+    "c_inc_deg": 86.27,
+    "t_sigma_r_m": 1.1,
+    "t_sigma_t_m": 9.89,
+    "t_sigma_n_m": 1.66,
+    "c_sigma_r_m": 512.98,
+    "c_sigma_t_m": 3355.78,
+    "c_sigma_n_m": 351.08,
+    "c_obs_used": 20,
+    "f10_solar_flux": 68.0,
+    "cdm_series": [
+      {
+        "t": 2.158,
+        "r": -6.2369,
+        "m": -5.95
+      }
+    ],
+    "p_s2_risk_blind": 0.297482,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 1615,
+    "mission_id": 1,
+    "c_object_type": "UNKNOWN",
+    "zone": "Z3: Stage-2 Risk-Blind Rescue (-7.0 <= LR < -6.0)",
+    "action_tag": "RESCUED_ALARM",
+    "n_allowed_cdms": 2,
+    "last_time_to_tca_days": 2.16,
+    "last_risk": -6.3609,
+    "max_risk_estimate": -5.9813,
+    "dilution_gap": 0.3796,
+    "b0_pred": 0,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.28149,
+    "S1_score": -2.9018,
+    "S2_score": -0.2533,
+    "p_rf": 0.1557,
+    "p_hgb": 0.4256,
+    "p_et": 0.2505,
+    "p_lgb": 0.470485,
+    "miss_distance_m": 8986.0,
+    "mahalanobis_distance": 26.07,
+    "relative_speed_ms": 8024.0,
+    "rel_pos_r_m": 455.5,
+    "rel_pos_t_m": -11491.4,
+    "rel_pos_n_m": -4441.7,
+    "rel_vel_r_ms": -1439.2,
+    "rel_vel_t_ms": -2895.8,
+    "rel_vel_n_ms": 7340.7,
+    "t_sma_km": 7074.35,
+    "t_ecc": 0.001444,
+    "t_inc_deg": 98.086,
+    "c_sma_km": 11222.87,
+    "c_ecc": 0.400032,
+    "c_inc_deg": 51.725,
+    "t_sigma_r_m": 8.91,
+    "t_sigma_t_m": 34.48,
+    "t_sigma_n_m": 2.43,
+    "c_sigma_r_m": 7533.86,
+    "c_sigma_t_m": 50247.42,
+    "c_sigma_n_m": 350.97,
+    "c_obs_used": 15,
+    "f10_solar_flux": 71.0,
+    "cdm_series": [
+      {
+        "t": 2.16,
+        "r": -6.3609,
+        "m": -5.9813
+      }
+    ],
+    "p_s2_risk_blind": 0.437013,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 1733,
+    "mission_id": 1,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "KEPT_ALARM",
+    "n_allowed_cdms": 15,
+    "last_time_to_tca_days": 2.211,
+    "last_risk": -5.6036,
+    "max_risk_estimate": -3.691,
+    "dilution_gap": 1.9126,
+    "b0_pred": 1,
+    "m6_r100_pred": 1,
+    "m6_prior_pred": 1,
+    "fr_pred_3z": -5.60198,
+    "S1_score": -2.3073,
+    "S2_score": -0.8569,
+    "p_rf": 0.0385,
+    "p_hgb": 0.1079,
+    "p_et": 0.043,
+    "p_lgb": 0.83068,
+    "miss_distance_m": 1256.0,
+    "mahalanobis_distance": 55.05,
+    "relative_speed_ms": 14390.0,
+    "rel_pos_r_m": 116.7,
+    "rel_pos_t_m": -456.9,
+    "rel_pos_n_m": 1557.8,
+    "rel_vel_r_ms": 84.6,
+    "rel_vel_t_ms": -13799.6,
+    "rel_vel_n_ms": -4079.4,
+    "t_sma_km": 7066.27,
+    "t_ecc": 0.000957,
+    "t_inc_deg": 98.119,
+    "c_sma_km": 7044.87,
+    "c_ecc": 0.012584,
+    "c_inc_deg": 98.483,
+    "t_sigma_r_m": 8.55,
+    "t_sigma_t_m": 36.47,
+    "t_sigma_n_m": 2.27,
+    "c_sigma_r_m": 23.5,
+    "c_sigma_t_m": 2441.53,
+    "c_sigma_n_m": 9.44,
+    "c_obs_used": 71,
+    "f10_solar_flux": 67.0,
+    "cdm_series": [
+      {
+        "t": 2.211,
+        "r": -5.6036,
+        "m": -3.691
+      }
+    ],
+    "p_s2_risk_blind": 0.29799,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  },
+  {
+    "event_id": 1849,
+    "mission_id": 7,
+    "c_object_type": "DEBRIS",
+    "zone": "Z2: Stage-1 Veto Zone (-6.0 <= LR < -5.25)",
+    "action_tag": "VETOED_SAFE",
+    "n_allowed_cdms": 14,
+    "last_time_to_tca_days": 2.23,
+    "last_risk": -5.8781,
+    "max_risk_estimate": -5.8788,
+    "dilution_gap": -0.0007,
+    "b0_pred": 1,
+    "m6_r100_pred": 0,
+    "m6_prior_pred": 0,
+    "fr_pred_3z": -6.001,
+    "S1_score": -2.7877,
+    "S2_score": -0.7356,
+    "p_rf": 0.03,
+    "p_hgb": 0.1521,
+    "p_et": 0.0433,
+    "p_lgb": 0.63772,
+    "miss_distance_m": 15654.0,
+    "mahalanobis_distance": 229.13,
+    "relative_speed_ms": 12532.0,
+    "rel_pos_r_m": -124.2,
+    "rel_pos_t_m": -1156.2,
+    "rel_pos_n_m": -1681.8,
+    "rel_vel_r_ms": 4.2,
+    "rel_vel_t_ms": -10336.3,
+    "rel_vel_n_ms": 7087.2,
+    "t_sma_km": 6868.97,
+    "t_ecc": 0.003185,
+    "t_inc_deg": 87.66,
+    "c_sma_km": 6879.5,
+    "c_ecc": 0.001692,
+    "c_inc_deg": 98.717,
+    "t_sigma_r_m": 3.81,
+    "t_sigma_t_m": 39.0,
+    "t_sigma_n_m": 1.51,
+    "c_sigma_r_m": 346.96,
+    "c_sigma_t_m": 23409.36,
+    "c_sigma_n_m": 46.04,
+    "c_obs_used": 31,
+    "f10_solar_flux": 75.0,
+    "cdm_series": [
+      {
+        "t": 2.23,
+        "r": -5.8781,
+        "m": -5.8788
+      }
+    ],
+    "p_s2_risk_blind": 0.323957,
+    "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior"
+  }
+];
+    const MU_EARTH = 398600.4418;
+    const R_EARTH_KM = 6378.137;
+    const J2_EARTH = 1.08262668e-3;
+    const HBR_M = 15.0;
+
+    let currentEvent = SIM_EVENTS[0];
+    let cameraFrame = 'rtn';
+    let isPlaying = true;
+    let scrubTimeSec = 0.0;
+    let cdmChart = null;
+    let currentProp = null;
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'tab-inference') renderCdmHistoryTab();
+    }
+
+    // Coupled 6-State Clohessy-Wiltshire State-Transition Matrix Phi(dt) + RK4 J2 Integrator
+    function cwStateTransitionMatrix(n, dt) {
+      const nt = n * dt;
+      const c = Math.cos(nt), s = Math.sin(nt);
+      const Phi_rr = [
+        [4 - 3*c, 0, 0],
+        [6*(s - nt), 1, 0],
+        [0, 0, c]
+      ];
+      const Phi_rv = [
+        [s/n, 2*(1 - c)/n, 0],
+        [-2*(1 - c)/n, (4*s - 3*nt)/n, 0],
+        [0, 0, s/n]
+      ];
+      const Phi_vr = [
+        [3*n*s, 0, 0],
+        [-6*n*(1 - c), 0, 0],
+        [0, 0, -n*s]
+      ];
+      const Phi_vv = [
+        [c, 2*s, 0],
+        [-2*s, 4*c - 3, 0],
+        [0, 0, c]
+      ];
+      return { Phi_rr, Phi_rv, Phi_vr, Phi_vv };
+    }
+
+    function matVec3(M, v) {
+      return [
+        M[0][0]*v[0] + M[0][1]*v[1] + M[0][2]*v[2],
+        M[1][0]*v[0] + M[1][1]*v[1] + M[1][2]*v[2],
+        M[2][0]*v[0] + M[2][1]*v[1] + M[2][2]*v[2]
+      ];
+    }
+
+    function propagateCWAndRK4(ev, dv_r_cms, dv_t_cms, dv_n_cms, leadDays) {
+      const sma = Math.max(ev.t_sma_km || 7078.0, 6550.0);
+      const incRad = ((ev.t_inc_deg || 98.2) * Math.PI) / 180.0;
+      const n0 = Math.sqrt(MU_EARTH / Math.pow(sma, 3));
+      const j2f = 1.5 * J2_EARTH * Math.pow(R_EARTH_KM / sma, 2);
+      const c_j2 = Math.sqrt(1.0 + j2f * (1.0 - 1.5 * Math.pow(Math.sin(incRad), 2)));
+      const n_eff = n0 * c_j2;
+
+      const leadSec = Math.max(leadDays, 0.25) * 86400.0;
+      const r0 = [ev.rel_pos_r_m, ev.rel_pos_t_m, ev.rel_pos_n_m];
+      const v0 = [ev.rel_vel_r_ms, ev.rel_vel_t_ms, ev.rel_vel_n_ms];
+
+      let dvt_ms = dv_t_cms / 100.0;
+      // Phase 3 Fix: Preserve exact physical Delta-v sign (+dv_T is prograde, -dv_T is retrograde)
+      const dv = [dv_r_cms / 100.0, dvt_ms, dv_n_cms / 100.0];
+
+      const stmLead = cwStateTransitionMatrix(n_eff, leadSec);
+      const delta_r_raw = matVec3(stmLead.Phi_rv, dv);
+      const delta_r_tca = [-delta_r_raw[0], -delta_r_raw[1], -delta_r_raw[2]];
+      const delta_v_raw = matVec3(stmLead.Phi_vv, dv);
+      const delta_v_tca = [-delta_v_raw[0], -delta_v_raw[1], -delta_v_raw[2]];
+
+      const r_post_tca = [r0[0] + delta_r_tca[0], r0[1] + delta_r_tca[1], r0[2] + delta_r_tca[2]];
+      const v_post_tca = [v0[0] + delta_v_tca[0], v0[1] + delta_v_tca[1], v0[2] + delta_v_tca[2]];
+
+      const nSteps = 121;
+      const tGrid = [];
+      for (let i = 0; i < nSteps; i++) tGrid.push(-600.0 + (1200.0 * i) / (nSteps - 1));
+      const dt = tGrid[1] - tGrid[0];
+
+      function rhs(s) {
+        const [x, y, z, vx, vy, vz] = s;
+        return [
+          vx, vy, vz,
+          3 * n_eff * n_eff * x + 2 * n_eff * vy,
+          -2 * n_eff * vx,
+          -Math.pow(n_eff * c_j2, 2) * z
+        ];
+      }
+
+      function integrateWindow(r_mid, v_mid) {
+        const stmBack = cwStateTransitionMatrix(n_eff, tGrid[0]);
+        const r_start_a = matVec3(stmBack.Phi_rr, r_mid);
+        const r_start_b = matVec3(stmBack.Phi_rv, v_mid);
+        const v_start_a = matVec3(stmBack.Phi_vr, r_mid);
+        const v_start_b = matVec3(stmBack.Phi_vv, v_mid);
+        let state = [
+          r_start_a[0] + r_start_b[0], r_start_a[1] + r_start_b[1], r_start_a[2] + r_start_b[2],
+          v_start_a[0] + v_start_b[0], v_start_a[1] + v_start_b[1], v_start_a[2] + v_start_b[2]
+        ];
+        const pts = [state.slice(0, 3)];
+        for (let i = 1; i < nSteps; i++) {
+          const k1 = rhs(state);
+          const s2 = state.map((v, j) => v + 0.5 * dt * k1[j]);
+          const k2 = rhs(s2);
+          const s3 = state.map((v, j) => v + 0.5 * dt * k2[j]);
+          const k3 = rhs(s3);
+          const s4 = state.map((v, j) => v + dt * k3[j]);
+          const k4 = rhs(s4);
+          state = state.map((v, j) => v + (dt / 6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]));
+          pts.push(state.slice(0, 3));
+        }
+        return pts;
+      }
+
+      const trajPre = integrateWindow(r0, v0);
+      const trajPost = integrateWindow(r_post_tca, v_post_tca);
+      const distPre = trajPre.map(p => Math.hypot(p[0], p[1], p[2]));
+      const distPost = trajPost.map(p => Math.hypot(p[0], p[1], p[2]));
+
+      const minPre = Math.min(...distPre);
+      const minPost = Math.min(...distPost);
+
+      // 2D Encounter B-Plane projection & polar Gaussian quadrature
+      const sigR = Math.hypot(ev.t_sigma_r_m || 5, ev.c_sigma_r_m || 150);
+      const sigT = Math.hypot(ev.t_sigma_t_m || 40, ev.c_sigma_t_m || 2500);
+      const sigN = Math.hypot(ev.t_sigma_n_m || 3, ev.c_sigma_n_m || 120);
+
+      function bplaneIntegrate(r_vec) {
+        const b_xi = r_vec[0];
+        const b_zeta = Math.hypot(r_vec[1], r_vec[2]);
+        const s_xi = Math.max(sigR, 15.0);
+        const s_zeta = Math.max(Math.hypot(sigT * 0.45, sigN), 35.0);
+        const mahaSq = (b_xi*b_xi)/(s_xi*s_xi) + (b_zeta*b_zeta)/(s_zeta*s_zeta);
+        const area = Math.PI * HBR_M * HBR_M;
+        const norm = 1.0 / (2.0 * Math.PI * s_xi * s_zeta);
+        const log10_pc = Math.max(-30.0, Math.log10(Math.max(area * norm, 1e-30)) - 0.5 * mahaSq * Math.LOG10E);
+        return { xi: b_xi, zeta: b_zeta, s_xi, s_zeta, log10_pc };
+      }
+
+      const bpPre = bplaneIntegrate(r0);
+      const bpPost = bplaneIntegrate(r_post_tca);
+      const basePred = ev.fr_pred_3z;
+      const postRisk = Math.max(-30.0, Math.min(0.0, basePred + (bpPost.log10_pc - bpPre.log10_pc)));
+
+      return {
+        tGrid, trajPre, trajPost, distPre, distPost,
+        r0, r_post_tca, delta_r_tca,
+        minPre, minPost, bpPre, bpPost,
+        basePred, postRisk, n_eff
+      };
+    }
+
+    // 3D WebGL Scene Setup (Three.js)
+    let scene, camera, renderer, targetGroup, chaserPreMesh, chaserPostMesh, linePre, linePost, ell1, ell2, ell3, earthGroup;
+    function initWebGL() {
+      const container = document.getElementById('webgl-container');
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 2000);
+      camera.position.set(28, 20, 32);
+      camera.lookAt(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.innerHTML = '';
+      container.appendChild(renderer.domElement);
+
+      // Mouse drag orbit control
+      let dragging = false, prevX = 0, prevY = 0, sphTheta = 0.75, sphPhi = 1.05, radius = 44;
+      function updateCamPos() {
+        camera.position.set(
+          radius * Math.sin(sphPhi) * Math.cos(sphTheta),
+          radius * Math.cos(sphPhi),
+          radius * Math.sin(sphPhi) * Math.sin(sphTheta)
+        );
+        camera.lookAt(0, 0, 0);
+      }
+      updateCamPos();
+      renderer.domElement.addEventListener('mousedown', e => { dragging = true; prevX = e.clientX; prevY = e.clientY; });
+      window.addEventListener('mouseup', () => { dragging = false; });
+      window.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        sphTheta -= (e.clientX - prevX) * 0.008;
+        sphPhi = Math.max(0.15, Math.min(Math.PI - 0.15, sphPhi - (e.clientY - prevY) * 0.008));
+        prevX = e.clientX; prevY = e.clientY;
+        updateCamPos();
+      });
+      renderer.domElement.addEventListener('wheel', e => {
+        e.preventDefault();
+        radius = Math.max(12, Math.min(120, radius + e.deltaY * 0.03));
+        updateCamPos();
+      }, { passive: false });
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(40, 60, 30);
+      scene.add(dirLight);
+
+      // RTN Grid & Triad
+      const grid = new THREE.GridHelper(40, 20, 0x1e293b, 0x0f172a);
+      grid.position.y = -0.05;
+      scene.add(grid);
+
+      targetGroup = new THREE.Group();
+      const bus = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 1.2, 1.6),
+        new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.6, roughness: 0.3 })
+      );
+      const panel = new THREE.Mesh(
+        new THREE.BoxGeometry(5.6, 0.08, 1.1),
+        new THREE.MeshStandardMaterial({ color: 0x1d4ed8, metalness: 0.8, roughness: 0.2 })
+      );
+      targetGroup.add(bus);
+      targetGroup.add(panel);
+      // RTN Axes Triad
+      const axes = new THREE.AxesHelper(6.5);
+      targetGroup.add(axes);
+      scene.add(targetGroup);
+
+      // Covariance ellipsoids (1-sigma, 2-sigma, 3-sigma)
+      function makeEllipsoid(color, opacity) {
+        const geo = new THREE.SphereGeometry(1, 20, 14);
+        const mat = new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity });
+        return new THREE.Mesh(geo, mat);
+      }
+      ell1 = makeEllipsoid(0x10b981, 0.35);
+      ell2 = makeEllipsoid(0xf59e0b, 0.22);
+      ell3 = makeEllipsoid(0xf43f5e, 0.14);
+      scene.add(ell1); scene.add(ell2); scene.add(ell3);
+
+      chaserPreMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.65, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0x881337 })
+      );
+      chaserPostMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.7, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0x34d399, emissive: 0x065f46 })
+      );
+      scene.add(chaserPreMesh);
+      scene.add(chaserPostMesh);
+
+      linePre = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: 0xf43f5e })
+      );
+      linePost = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: 0x38bdf8 })
+      );
+      scene.add(linePre);
+      scene.add(linePost);
+
+      // Earth LEO Inertial Group (shown when cameraFrame === 'eci')
+      earthGroup = new THREE.Group();
+      const earthMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(9.0, 32, 24),
+        new THREE.MeshStandardMaterial({ color: 0x0ea5e9, wireframe: true, transparent: true, opacity: 0.35 })
+      );
+      earthGroup.add(earthMesh);
+      earthGroup.visible = false;
+      scene.add(earthGroup);
+
+      animateWebGL();
+    }
+
+    function setCameraFrame(mode) {
+      cameraFrame = mode;
+      document.getElementById('btn-frame-rtn').classList.toggle('active', mode === 'rtn');
+      document.getElementById('btn-frame-eci').classList.toggle('active', mode === 'eci');
+      earthGroup.visible = (mode === 'eci');
+      ell1.visible = ell2.visible = ell3.visible = (mode === 'rtn');
+      update3DGeometry();
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      document.getElementById('btn-play').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+    }
+
+    function onScrubTime() {
+      isPlaying = false;
+      document.getElementById('btn-play').textContent = '▶ Play';
+      scrubTimeSec = parseFloat(document.getElementById('slider-tscrub').value);
+      document.getElementById('lbl-t-scrub').textContent = `t = ${scrubTimeSec.toFixed(0)} s`;
+      updateChaserPositionAtScrub();
+    }
+
+    function update3DGeometry() {
+      if (!currentProp || !scene) return;
+      const scale = 1.0 / 800.0; // 800 meters per scene unit in RTN view
+      const prePts = currentProp.trajPre.map(p => new THREE.Vector3(p[0]*scale, p[2]*scale, p[1]*scale));
+      const postPts = currentProp.trajPost.map(p => new THREE.Vector3(p[0]*scale, p[2]*scale, p[1]*scale));
+      linePre.geometry.setFromPoints(prePts);
+      linePost.geometry.setFromPoints(postPts);
+
+      const sr = Math.max(0.8, Math.min(4.0, (currentEvent.c_sigma_r_m || 250) * scale));
+      const st = Math.max(1.8, Math.min(9.0, (currentEvent.c_sigma_t_m || 2500) * scale * 0.35));
+      const sn = Math.max(0.8, Math.min(4.0, (currentEvent.c_sigma_n_m || 200) * scale));
+      ell1.scale.set(sr, sn, st);
+      ell2.scale.set(sr*2, sn*2, st*2);
+      ell3.scale.set(sr*3, sn*3, st*3);
+
+      updateChaserPositionAtScrub();
+    }
+
+    function updateChaserPositionAtScrub() {
+      if (!currentProp) return;
+      const scale = 1.0 / 800.0;
+      const idx = Math.min(
+        currentProp.tGrid.length - 1,
+        Math.max(0, Math.round(((scrubTimeSec + 600.0) / 1200.0) * (currentProp.tGrid.length - 1)))
+      );
+      const pPre = currentProp.trajPre[idx];
+      const pPost = currentProp.trajPost[idx];
+      chaserPreMesh.position.set(pPre[0]*scale, pPre[2]*scale, pPre[1]*scale);
+      chaserPostMesh.position.set(pPost[0]*scale, pPost[2]*scale, pPost[1]*scale);
+    }
+
+    function animateWebGL() {
+      requestAnimationFrame(animateWebGL);
+      if (isPlaying && currentProp) {
+        scrubTimeSec += 4.0;
+        if (scrubTimeSec > 600.0) scrubTimeSec = -600.0;
+        document.getElementById('slider-tscrub').value = scrubTimeSec;
+        document.getElementById('lbl-t-scrub').textContent = `t = ${scrubTimeSec.toFixed(0)} s`;
+        updateChaserPositionAtScrub();
+      }
+      if (renderer && scene && camera) renderer.render(scene, camera);
+    }
+
+    // 2D Engineering Canvases (RK4 Separation Profile, 2D B-Plane, and Parametric Delta-v Curve)
+    function drawRK4SeparationCanvas(prop) {
+      const canvas = document.getElementById('canvas-rk4-sep');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.clientWidth || 560;
+      const h = canvas.height = 175;
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = 52, padR = 18, padT = 18, padB = 28;
+      const pw = w - padL - padR, ph = h - padT - padB;
+      const maxD = Math.max(...prop.distPre, ...prop.distPost, 1000.0) * 1.08;
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (ph * i) / 4;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+        ctx.fillStyle = '#64748b'; ctx.font = '10px monospace';
+        const val = ((1 - i/4) * maxD / 1000.0).toFixed(1) + 'km';
+        ctx.fillText(val, 4, y + 3);
+      }
+
+      function plotSeries(arr, color, dashed) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.2;
+        if (dashed) ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        arr.forEach((d, i) => {
+          const x = padL + (pw * i) / (arr.length - 1);
+          const y = padT + ph * (1.0 - Math.min(d / maxD, 1.0));
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.restore();
+      }
+      plotSeries(prop.distPre, '#f43f5e', false);
+      plotSeries(prop.distPost, '#38bdf8', true);
+
+      // Draw TCA vertical marker
+      const xMid = padL + pw * 0.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.beginPath(); ctx.moveTo(xMid, padT); ctx.lineTo(xMid, h - padB); ctx.stroke();
+      ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif';
+      ctx.fillText('t = -600 s', padL, h - 8);
+      ctx.fillText('TCA (t = 0 s)', xMid - 28, h - 8);
+      ctx.fillText('t = +600 s', w - padR - 52, h - 8);
+    }
+
+    function drawBPlaneCanvas(prop) {
+      const canvas = document.getElementById('canvas-bplane');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.clientWidth || 340;
+      const h = canvas.height = 270;
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2, cy = h / 2;
+      const maxSpan = Math.max(
+        Math.hypot(prop.bpPre.xi, prop.bpPre.zeta) * 1.4,
+        Math.hypot(prop.bpPost.xi, prop.bpPost.zeta) * 1.15,
+        prop.bpPre.s_zeta * 3.2,
+        2500.0
+      );
+      const scale = (Math.min(w, h) * 0.42) / maxSpan;
+
+      // Crosshairs
+      ctx.strokeStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+      ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+      ctx.stroke();
+
+      // 1-sigma, 2-sigma, 3-sigma covariance ellipses centered on Chaser nominal
+      const cols = ['rgba(16,185,129,0.55)', 'rgba(245,158,11,0.45)', 'rgba(244,63,94,0.35)'];
+      [1, 2, 3].forEach((k, idx) => {
+        ctx.strokeStyle = cols[idx];
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.ellipse(
+          cx, cy,
+          Math.max(6, prop.bpPre.s_xi * k * scale),
+          Math.max(6, prop.bpPre.s_zeta * k * scale),
+          0, 0, Math.PI * 2
+        );
+        ctx.stroke();
+      });
+
+      // Pre-CAM & Post-CAM encounter points in B-plane
+      const xPre = cx + prop.bpPre.xi * scale;
+      const yPre = cy - prop.bpPre.zeta * scale;
+      const xPost = cx + prop.bpPost.xi * scale;
+      const yPost = cy - prop.bpPost.zeta * scale;
+
+      // Displacement arrow
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(xPre, yPre); ctx.lineTo(xPost, yPost); ctx.stroke();
+
+      ctx.fillStyle = '#f43f5e';
+      ctx.beginPath(); ctx.arc(xPre, yPre, 5.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath(); ctx.arc(xPost, yPost, 6.0, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#e2e8f0'; ctx.font = '11px monospace';
+      ctx.fillText('Pre-CAM', xPre + 8, yPre - 4);
+      ctx.fillStyle = '#34d399';
+      ctx.fillText('Post-CAM', xPost + 8, yPost + 12);
+    }
+
+    function drawDvCurveCanvas(ev, leadDays, currentDvT) {
+      const canvas = document.getElementById('canvas-dv-curve');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.clientWidth || 340;
+      const h = canvas.height = 195;
+      ctx.clearRect(0, 0, w, h);
+
+      const padL = 42, padR = 14, padT = 16, padB = 26;
+      const pw = w - padL - padR, ph = h - padT - padB;
+      const dvGrid = [-8, -6, -4, -2, -1, 0, 1, 2, 4, 6, 8];
+      const risks = dvGrid.map(dv => propagateCWAndRK4(ev, 0, dv, 0, leadDays).postRisk);
+
+      // -6.0 threshold line
+      const yThr = padT + ph * ((-3.0 - (-6.0)) / 15.0);
+      ctx.strokeStyle = 'rgba(244,63,94,0.6)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(padL, yThr); ctx.lineTo(w - padR, yThr); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#fb7185'; ctx.font = '10px monospace';
+      ctx.fillText('ESA Threshold (-6.0)', padL + 6, yThr - 4);
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      dvGrid.forEach((dv, i) => {
+        const x = padL + pw * ((dv + 8.0) / 16.0);
+        const rClip = Math.max(-18.0, Math.min(-3.0, risks[i]));
+        const y = padT + ph * ((-3.0 - rClip) / 15.0);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Current operating point marker
+      const curRes = propagateCWAndRK4(ev, 0, currentDvT, 0, leadDays);
+      const xCur = padL + pw * ((Math.max(-8, Math.min(8, currentDvT)) + 8.0) / 16.0);
+      const rCur = Math.max(-18.0, Math.min(-3.0, curRes.postRisk));
+      const yCur = padT + ph * ((-3.0 - rCur) / 15.0);
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath(); ctx.arc(xCur, yCur, 5.5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif';
+      ctx.fillText('-8 cm/s', padL, h - 6);
+      ctx.fillText('0 cm/s', padL + pw/2 - 16, h - 6);
+      ctx.fillText('+8 cm/s', w - padR - 42, h - 6);
+    }
+
+    function renderCdmHistoryTab() {
+      const series = currentEvent.cdm_series || [];
+      const tbody = document.querySelector('#tbl-cdm-history tbody');
+      tbody.innerHTML = '';
+      series.forEach((pt, idx) => {
+        const gap = (pt.m - pt.r).toFixed(3);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${idx + 1}</td>
+          <td>${pt.t.toFixed(2)} d</td>
+          <td>${pt.r.toFixed(3)}</td>
+          <td>${pt.m.toFixed(3)}</td>
+          <td>+${gap}</td>
+          <td><span class="status-pill pill-safe">ALLOWED (T &ge; 2.0d)</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const payload = {
+        operating_mode: document.getElementById('op-mode-select').value,
+        cdms: series.map(pt => ({
+          event_id: currentEvent.event_id,
+          time_to_tca: pt.t,
+          risk: pt.r,
+          max_risk_estimate: pt.m,
+          miss_distance: currentEvent.miss_distance_m,
+          mahalanobis_distance: currentEvent.mahalanobis_distance,
+          relative_speed: currentEvent.relative_speed_ms,
+          c_sigma_t: currentEvent.c_sigma_t_m,
+          c_object_type: currentEvent.c_object_type
+        }))
+      };
+      document.getElementById('pre-api-payload').textContent = JSON.stringify(payload, null, 2);
+
+      const ctx = document.getElementById('chart-cdm-series').getContext('2d');
+      if (cdmChart) cdmChart.destroy();
+      cdmChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: series.map(p => `T-${p.t.toFixed(2)}d`),
+          datasets: [
+            { label: 'Operational Risk log10(Pc)', data: series.map(p => p.r), borderColor: '#38bdf8', tension: 0.25 },
+            { label: 'Max Diluted Risk log10(Pc,max)', data: series.map(p => p.m), borderColor: '#f59e0b', borderDash: [5, 4], tension: 0.25 },
+            { label: 'ESA High-Risk Threshold (-6.0)', data: series.map(() => -6.0), borderColor: '#f43f5e', borderDash: [3, 3], pointRadius: 0 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+          }
+        }
+      });
+    }
+
+    function setOptimalProgradeBurn() {
+      document.getElementById('slider-dvt').value = 2.5;
+      document.getElementById('slider-dvr').value = 0.0;
+      document.getElementById('slider-dvn').value = 0.0;
+      updateAll();
+    }
+
+    function resetBurn() {
+      document.getElementById('slider-dvt').value = 0.0;
+      document.getElementById('slider-dvr').value = 0.0;
+      document.getElementById('slider-dvn').value = 0.0;
+      updateAll();
+    }
+
+    function onSelectEvent() {
+      const idx = parseInt(document.getElementById('event-select').value, 10);
+      currentEvent = SIM_EVENTS[idx] || SIM_EVENTS[0];
+      updateAll();
+    }
+
+    function updateAll() {
+      const dvt = parseFloat(document.getElementById('slider-dvt').value);
+      const dvr = parseFloat(document.getElementById('slider-dvr').value);
+      const dvn = parseFloat(document.getElementById('slider-dvn').value);
+      const lead = parseFloat(document.getElementById('slider-lead').value);
+      const mode = document.getElementById('op-mode-select').value;
+
+      document.getElementById('lbl-dvt').textContent = dvt.toFixed(2);
+      document.getElementById('lbl-dvr').textContent = dvr.toFixed(2);
+      document.getElementById('lbl-dvn').textContent = dvn.toFixed(2);
+      document.getElementById('lbl-lead').textContent = lead.toFixed(2);
+
+      currentProp = propagateCWAndRK4(currentEvent, dvr, dvt, dvn, lead);
+
+      const isAlarm = (mode === 'prior') ? (currentEvent.m6_prior_pred === 1) : (currentEvent.m6_r100_pred === 1);
+      const zBadge = document.getElementById('zone-badge');
+      zBadge.textContent = `${currentEvent.action_tag} (${mode.toUpperCase()})`;
+      zBadge.className = 'status-pill ' + (isAlarm ? 'pill-alarm' : 'pill-safe');
+
+      document.getElementById('kpi-lr').textContent = currentEvent.last_risk.toFixed(3);
+      document.getElementById('kpi-maxr').textContent = `Pc,max: ${currentEvent.max_risk_estimate.toFixed(2)} (Gap +${currentEvent.dilution_gap.toFixed(2)})`;
+      document.getElementById('kpi-pred').textContent = currentEvent.fr_pred_3z.toFixed(3);
+      document.getElementById('kpi-probs').textContent = `S1: ${currentEvent.p_lgb.toFixed(3)} | S2(Risk-Blind): ${(currentEvent.p_s2_risk_blind || 0.12).toFixed(3)}`;
+      document.getElementById('kpi-miss-pre').textContent = `${currentProp.minPre.toFixed(0)} m`;
+      document.getElementById('kpi-speed').textContent = `v_rel: ${currentEvent.relative_speed_ms.toFixed(0)} m/s`;
+      document.getElementById('kpi-miss-post').textContent = `${currentProp.minPost.toFixed(0)} m`;
+      document.getElementById('kpi-shift').textContent = `CW Shift: ${Math.abs(currentProp.delta_r_tca[1]).toFixed(0)} m`;
+      document.getElementById('kpi-bp-pre').textContent = currentProp.bpPre.log10_pc.toFixed(2);
+      document.getElementById('kpi-bp-post').textContent = currentProp.postRisk.toFixed(2);
+      document.getElementById('kpi-cam-status').textContent = (currentProp.postRisk < -6.0)
+        ? 'Analytical Scenario < -6.0'
+        : 'Scenario Remains >= -6.0';
+
+      document.getElementById('txt-rtn-state').textContent =
+        `r_pre(TCA)  = [${currentProp.r0.map(v => v.toFixed(1)).join(', ')}] m | ` +
+        `r_post(TCA) = [${currentProp.r_post_tca.map(v => v.toFixed(1)).join(', ')}] m`;
+
+      update3DGeometry();
+      drawRK4SeparationCanvas(currentProp);
+      drawBPlaneCanvas(currentProp);
+      drawDvCurveCanvas(currentEvent, lead, dvt);
+      if (document.getElementById('tab-inference').classList.contains('active')) {
+        renderCdmHistoryTab();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const sel = document.getElementById('event-select');
+      SIM_EVENTS.forEach((ev, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `Event #${ev.event_id} | ${ev.action_tag} | LR=${ev.last_risk.toFixed(2)} | Pred=${ev.fr_pred_3z.toFixed(2)} | Miss=${ev.miss_distance_m.toFixed(0)}m`;
+        sel.appendChild(opt);
+      });
+      initWebGL();
+      updateAll();
+    });
+  </script>
+</body>
+</html>

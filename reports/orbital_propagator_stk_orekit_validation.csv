@@ -1,0 +1,5 @@
+Scenario_ID,Description,Lead_Time_Hours,DeltaV_T_cms,CW_Kepler_dT_m,CW_J2_Schweighart_dT_m,HighPrec_ECI_J2_Cowell_DOP853_dT_m,Orekit12_STK12_J2_Ref_dT_m,CW_J2_vs_Cowell_RelError_Pct,Cowell_vs_Orekit_STK_3D_Diff_m
+BENCH_01_Prograde_AlongTrack_6h_SSO,Prograde +2.0 cm/s along-track CAM at T-6h in 700km Sun-Synchronous Orbit (inc=98.2 deg),6.0,2.0,1355.54,1355.23,1354.83,1354.74,0.0298,0.0858
+BENCH_02_Retrograde_AlongTrack_12h_SSO,Retrograde -2.0 cm/s along-track CAM at T-12h in 700km Sun-Synchronous Orbit (inc=98.2 deg),12.0,-2.0,-2518.85,-2518.57,-2515.3,-2515.15,0.1299,0.1591
+BENCH_03_Prograde_AlongTrack_24h_ISS,Prograde +1.5 cm/s along-track CAM at T-24h in 51.6 deg inclined LEO orbit,24.0,1.5,3884.26,3884.55,3895.08,3895.02,0.2704,0.0636
+BENCH_04_Combined_RTN_12h_Polar,"3-Axis burn [R=+0.5, T=+2.5, N=-0.5] cm/s at T-12h in Polar LEO (inc=87.8 deg)",12.0,2.5,3158.89,3159.34,3150.82,3150.61,0.2705,0.203

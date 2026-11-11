@@ -1,0 +1,90 @@
+{
+  "registry_schema_version": "2.0",
+  "active_model_file": "final_model.joblib",
+  "models": [
+    {
+      "file": "final_collision_risk_model.joblib",
+      "model_name": "M6_LeakFree_TwoStage_PriorAdapted",
+      "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior",
+      "architecture": "Unified Two-Stage LightGBM (350-Tree Stage-1 NOCAT + 350-Tree Stage-2 Risk-Blind Physical Allowlist) + 3-Zone Regressor",
+      "status": "registered",
+      "file_sha256": "643c764fe85b58b1ca27dd17d72a7a38de0958614c5e42541c6f904a46821269",
+      "bundle_sha256": "13a09684e8aeabe6",
+      "size_bytes": 904934,
+      "validation_gate_passed": true,
+      "validation_gates": {
+        "gate_1_schema_and_finite_probe": true,
+        "gate_2_sha256_cryptographic_digest": true,
+        "gate_3_stage2_risk_blind_zero_sensitivity": true,
+        "gate_4_causal_cutoff_compliance": true,
+        "gate_5_benchmark_prediction_and_cost_sanity": true
+      },
+      "stage1_features": 200,
+      "stage2_risk_blind_features": 184,
+      "updated_at_utc": "2026-11-11T17:23:00Z"
+    },
+    {
+      "file": "final_model.joblib",
+      "model_name": "M6_LeakFree_TwoStage_PriorAdapted",
+      "model_version": "M6.2-Unified-LightGBM-m6_leakfree_prior",
+      "architecture": "Unified Two-Stage LightGBM (350-Tree Stage-1 NOCAT + 350-Tree Stage-2 Risk-Blind Physical Allowlist) + 3-Zone Regressor",
+      "status": "active",
+      "file_sha256": "643c764fe85b58b1ca27dd17d72a7a38de0958614c5e42541c6f904a46821269",
+      "bundle_sha256": "13a09684e8aeabe6",
+      "size_bytes": 904934,
+      "validation_gate_passed": true,
+      "validation_gates": {
+        "gate_1_schema_and_finite_probe": true,
+        "gate_2_sha256_cryptographic_digest": true,
+        "gate_3_stage2_risk_blind_zero_sensitivity": true,
+        "gate_4_causal_cutoff_compliance": true,
+        "gate_5_benchmark_prediction_and_cost_sanity": true
+      },
+      "stage1_features": 200,
+      "stage2_risk_blind_features": 184,
+      "updated_at_utc": "2026-11-11T17:23:00Z"
+    },
+    {
+      "file": "m6_leakfree_r100_budget.joblib",
+      "model_name": "M6_LeakFree_TwoStage_FixedBudget_r100",
+      "model_version": "M6.2-Unified-LightGBM-m6_leakfree_r100",
+      "architecture": "Unified Two-Stage LightGBM (Fixed Budget r=1.00, 350-Tree Stage-1 NOCAT + 350-Tree Stage-2 Risk-Blind Physical Allowlist)",
+      "status": "registered",
+      "file_sha256": "05f808b68631075240752584ea5e3265de4fd7dd043cda7d7bca3473c3c407c2",
+      "bundle_sha256": "4e326dd21d354627",
+      "size_bytes": 904938,
+      "validation_gate_passed": true,
+      "validation_gates": {
+        "gate_1_schema_and_finite_probe": true,
+        "gate_2_sha256_cryptographic_digest": true,
+        "gate_3_stage2_risk_blind_zero_sensitivity": true,
+        "gate_4_causal_cutoff_compliance": true,
+        "gate_5_benchmark_prediction_and_cost_sanity": true
+      },
+      "stage1_features": 200,
+      "stage2_risk_blind_features": 184,
+      "updated_at_utc": "2026-11-11T17:23:00Z"
+    },
+    {
+      "file": "m7_v4_champion_exploratory.joblib",
+      "model_name": "M7_V4_ThreeStage_Physics_Champion_Exploratory",
+      "model_version": "M6.2-Unified-LightGBM-m7_v4_exploratory",
+      "architecture": "Three-Stage Exploratory Benchmark (350-Tree Stage-1 + 350-Tree Stage-2 Risk-Blind + Stage-3 Deep Covariance Rescue)",
+      "status": "registered",
+      "file_sha256": "395d56e6b144f7a0ed6c1bc4db0c6d0d181e2cc8f0b921be451531b501b9c692",
+      "bundle_sha256": "c6449b1c84dbfd3c",
+      "size_bytes": 904942,
+      "validation_gate_passed": true,
+      "validation_gates": {
+        "gate_1_schema_and_finite_probe": true,
+        "gate_2_sha256_cryptographic_digest": true,
+        "gate_3_stage2_risk_blind_zero_sensitivity": true,
+        "gate_4_causal_cutoff_compliance": true,
+        "gate_5_benchmark_prediction_and_cost_sanity": true
+      },
+      "stage1_features": 200,
+      "stage2_risk_blind_features": 184,
+      "updated_at_utc": "2026-11-11T17:23:00Z"
+    }
+  ]
+}

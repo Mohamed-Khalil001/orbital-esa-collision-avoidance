@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+data/*.csv
+data/*.zip
+data/raw
+models/archive
+research/notebooks
+research/reports_ar
+research/archive

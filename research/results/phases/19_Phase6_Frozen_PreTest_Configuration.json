@@ -1,0 +1,56 @@
+{
+  "protocol_version": "Phase6_PreTest_Frozen_v1.0",
+  "locked_before_test_evaluation": true,
+  "contamination_disclosure": "test_data_private.csv was previously inspected during Phase 1-2 error analysis (B0/B2/B3 comparison and 42-event dissection). Test evaluation metrics are reported with explicit post-hoc exposure disclosure; 15-fold/25-fold/Group-Aware CV remains the primary unbiased scientific benchmark.",
+  "architecture_parameters": {
+    "GATE": -7.0,
+    "BASELINE_THRESHOLD": -6.0,
+    "HardLock": -5.25,
+    "primary_rescue_multiplier_r": 1.0,
+    "secondary_sensitivity_multiplier_r": 1.35,
+    "safety_buffer_buf": 0.1
+  },
+  "full_training_oof_calibration_exact_rf_nocat": {
+    "n_train_events": 8892,
+    "n_baseline_alarms": 339,
+    "n_Z1_severe_high_risk": 175,
+    "n_Z2_borderline_alarms": 164,
+    "n_Z3_ingate_subthreshold": 359,
+    "tau_veto_exact": -3.895482,
+    "n_vetoed_exact_full_train": 42,
+    "vetoed_tp_exact_full_train": 0,
+    "tau_rescue_exact_r100": -3.522893,
+    "tau_rescue_exact_r135": -3.632322
+  },
+  "deployable_test_scoring_calibration": {
+    "feature_names": [
+      "intercept",
+      "logit_p_lgbm",
+      "last_risk",
+      "log1p_n_allowed",
+      "allowed_span_days",
+      "cutoff_gap",
+      "lr_x_log1p_n_allowed",
+      "near_cutoff_flag",
+      "sparse_cdm_flag"
+    ],
+    "w_distill": [
+      -0.50613528,
+      0.30726655,
+      0.20745506,
+      0.72424121,
+      -0.10129211,
+      -0.0081404,
+      0.074739,
+      -0.07658865,
+      0.38956144
+    ],
+    "tau_veto_dist": -4.356471,
+    "n_vetoed_dist_full_train": 17,
+    "veto_borderline_fraction_train": 0.103659,
+    "vetoed_tp_dist_full_train": 0,
+    "tau_rescue_dist_r100": -3.078125,
+    "tau_rescue_dist_r135": -3.197259,
+    "tau_single_stage_m3_dist": -4.490277
+  }
+}

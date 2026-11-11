@@ -1,0 +1,7 @@
+# Extra packages for the notebooks, retraining and the research archive
+-r requirements.txt
+xgboost>=2.0
+matplotlib>=3.7
+jupyter>=1.0
+openpyxl>=3.1
+tabulate>=0.9

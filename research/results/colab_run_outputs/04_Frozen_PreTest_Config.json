@@ -1,0 +1,14 @@
+{
+  "protocol": "ESA_Phase6_FirstPlace_Champion_M7_V4_FrozenConfig",
+  "GATE": -7.0,
+  "THRESHOLD": -6.0,
+  "M6_HARD_LOCK": -5.25,
+  "M7_EXTENDED_HARD_LOCK": -4.6,
+  "PERSISTENT_MIN_RISK_LOCK": -5.65,
+  "three_regime_regressor": {
+    "m_hi_frozen": -5.05875,
+    "m_sub_frozen": -5.40412,
+    "sub_ramp_intercept_a": -5.70907,
+    "sub_ramp_slope_b": -0.86271
+  }
+}

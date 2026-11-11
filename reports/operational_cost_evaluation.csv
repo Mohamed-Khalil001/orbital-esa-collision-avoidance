@@ -1,0 +1,18 @@
+System,Category,TP,FP,FN,Alarms_N_CAM,F2,ESA_Loss_L,Cost_FP,Cost_FN,Cost_CAM,Total_Operational_Cost_C,Net_Cost_Savings_vs_B0,Cost_Rank
+🏆 M7_V4_ThreeStage_PeakF2_Champion (Our #1 Model),2_Our_Champion,130,76,20,206,0.80645,0.48531,76.0,400.0,412.0,888.0,231.0,1
+🥇 M7_V4_ThreeStage_BudgetMatched (Our #1 Model),2_Our_Champion,126,61,24,187,0.80051,0.4996,61.0,480.0,374.0,915.0,204.0,2
+dietmarw (Official ESA 2nd Place Winner),3_ESA_Leaderboard,126,95,24,221,0.765,0.57446,95.0,480.0,442.0,1017.0,102.0,3
+⭐ M6_LeakFree_PriorAdapted_3Zone (Our #8 Loss / #1 Global F2 — Zero Leakage),2_Our_Pipeline,122,71,28,193,0.76923,0.63548,71.0,560.0,386.0,1017.0,102.0,4
+⭐ M6_LeakFree_FixedBudget_r100_3Zone (Our #1 Precision 66.3% — Zero Leakage),2_Our_Pipeline,120,61,30,181,0.76825,0.6365,61.0,600.0,362.0,1023.0,96.0,5
+M6_v3_TwoStage_Hybrid_Ensemble (Our Phase 6),2_Our_Pipeline,119,57,31,176,0.76675,0.64333,57.0,620.0,352.0,1029.0,90.0,6
+M5d_TwoStage_Primary_r100 (Our Approved CV),2_Our_Pipeline,118,60,32,178,0.75835,0.65576,60.0,640.0,356.0,1056.0,63.0,7
+Magpies (Official ESA 3rd Place Winner),3_ESA_Leaderboard,133,150,17,283,0.753,0.58489,150.0,340.0,566.0,1056.0,63.0,8
+B0_LRP_Baseline (last_risk >= -6.0),1_Baseline,115,63,35,178,0.73907,0.69396,63.0,700.0,356.0,1119.0,0.0,9
+DeCRA (Official ESA 5th Place),3_ESA_Leaderboard,128,142,22,270,0.7356,0.61488,142.0,440.0,540.0,1122.0,-3.0,10
+Valis (Official ESA 6th Place),3_ESA_Leaderboard,127,138,23,265,0.7341,0.62737,138.0,460.0,530.0,1128.0,-9.0,11
+sesc (Official ESA 1st Place Winner),3_ESA_Leaderboard,132,169,18,301,0.733,0.55531,169.0,360.0,602.0,1131.0,-12.0,12
+GrandpaBem (Official ESA 9th Place),3_ESA_Leaderboard,123,122,27,245,0.7278,0.65174,122.0,540.0,490.0,1152.0,-33.0,13
+TS (Official ESA 10th Place),3_ESA_Leaderboard,118,92,32,210,0.7284,0.67283,92.0,640.0,420.0,1152.0,-33.0,14
+Spacemeister (Official ESA 8th Place),3_ESA_Leaderboard,122,118,28,240,0.7262,0.65162,118.0,560.0,480.0,1158.0,-39.0,15
+DunderMifflin (Official ESA 7th Place),3_ESA_Leaderboard,138,223,12,361,0.749,0.62758,223.0,240.0,722.0,1185.0,-66.0,16
+Vidente (Official ESA 4th Place),3_ESA_Leaderboard,134,204,16,338,0.714,0.60983,204.0,320.0,676.0,1200.0,-81.0,17

@@ -1,0 +1,7 @@
+Physical_Zone,Total_Events,HighRisk_Positives,Base_Rate_Pct,Mean_Last_Risk,Mean_RF_Prob_Pos,Mean_RF_Prob_Neg
+"Z1_Severe_HighRisk_[-5.25,0]",175,40,22.857,-4.599,0.3594,0.2284
+"Z2_Borderline_Alarm_[-6.00,-5.25)",164,30,18.293,-5.656,0.2624,0.1758
+"Z3_InGate_SubThreshold_[-7.00,-6.00)",359,12,3.343,-6.5,0.0883,0.0538
+"Z4_Moderate_SubThreshold_[-11.50,-7.00)",1218,6,0.493,-8.917,0.0001,0.0001
+"Z5_Deep_SubThreshold_(-30.00,-11.50)",2096,4,0.191,-17.982,0.0001,0.0001
+Z6_Floor_Censored_(-30.00),4880,1,0.02,-30.0,0.0001,0.0001

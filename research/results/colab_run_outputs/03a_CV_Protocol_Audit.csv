@@ -1,0 +1,2 @@
+Outer_Design,Outer_Folds_Total,Inner_Folds_Per_Outer,Threshold_Calibration,Feature_Selection,Scikit_Learn_Version,GPU_Acceleration
+3 seeds x 5 stratified folds,15,3,Inner OOF predictions from outer-training events only,Refit inside each inner/outer training split,1.6.1,Not used by these scikit-learn tree estimators
