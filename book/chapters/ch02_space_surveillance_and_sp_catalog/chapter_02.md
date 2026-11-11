@@ -2,7 +2,7 @@
 
  > **ORBITAL-AI · Engineering Book · Chapter 2 of 6**
 
-[← Book home](../README.md) · [Previous chapter](chapter_01.md) · [Next chapter](chapter_03.md)
+[← Book home](../../README.md) · [Previous chapter](../ch01_leo_debris_environment/chapter_01.md) · [Next chapter](../ch03_cdm_data_lineage_103_columns/chapter_03.md)
 
 ---
 
@@ -473,7 +473,7 @@ CCSDS (2025). Conjunction Data Message — Pink Sheets Revision Draft CCSDS 508.
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 2](../Figures/embedded/chapter_02_embedded_01.png)
+![رسم مضمن من مستند الفصل 2](../../Figures/embedded/chapter_02_embedded_01.png)
 
 
 ## خلاصة الانتقال
@@ -482,4 +482,4 @@ CCSDS (2025). Conjunction Data Message — Pink Sheets Revision Draft CCSDS 508.
 
 ---
 
-[← Book home](../README.md) · [Previous chapter](chapter_01.md) · [Next chapter](chapter_03.md)
+[← Book home](../../README.md) · [Previous chapter](../ch01_leo_debris_environment/chapter_01.md) · [Next chapter](../ch03_cdm_data_lineage_103_columns/chapter_03.md)
