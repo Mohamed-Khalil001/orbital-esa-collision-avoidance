@@ -7,6 +7,7 @@ from dataclasses import asdict
 import json
 import os
 import time
+import hmac
 from pathlib import Path
 
 import pandas as pd
@@ -33,7 +34,8 @@ app = FastAPI(
     ),
 )
 
-_RATE_LIMIT_MAX_REQ = int(os.environ.get("ORBITAL_RATE_LIMIT_PER_MIN", "120"))
+_RATE_LIMIT_MAX_REQ = max(1, int(os.environ.get("ORBITAL_RATE_LIMIT_PER_MIN", "120")))
+_API_KEY_REQUIRED = os.environ.get("ORBITAL_API_KEY_REQUIRED", "true").strip().lower() not in {"0", "false", "no"}
 _RATE_BUCKETS: dict[str, list[float]] = {}
 
 
@@ -50,10 +52,16 @@ async def security_and_rate_limit_middleware(request: Request, call_next):
     window.append(now)
     _RATE_BUCKETS[client_ip] = window
 
+    is_protected_write = request.url.path.startswith("/api/v1/") and request.method in {"POST", "PUT", "PATCH", "DELETE"}
     configured_key = os.environ.get("ORBITAL_API_KEY", "").strip()
-    if configured_key and request.url.path.startswith("/api/v1/") and request.method == "POST":
+    if is_protected_write and _API_KEY_REQUIRED and not configured_key:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"detail": "API write access is disabled until ORBITAL_API_KEY is configured."},
+        )
+    if is_protected_write and configured_key:
         supplied_key = request.headers.get("X-API-Key", "").strip()
-        if supplied_key != configured_key:
+        if not hmac.compare_digest(supplied_key, configured_key):
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"detail": "Invalid or missing X-API-Key header."},
@@ -61,6 +69,7 @@ async def security_and_rate_limit_middleware(request: Request, call_next):
 
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Cache-Control"] = "no-store"
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-RateLimit-Limit"] = str(_RATE_LIMIT_MAX_REQ)
     response.headers["X-RateLimit-Remaining"] = str(max(0, _RATE_LIMIT_MAX_REQ - len(window)))

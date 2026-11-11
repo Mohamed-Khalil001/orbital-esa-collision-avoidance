@@ -43,7 +43,7 @@ CostRα = FP + α · FN,       α  ∈  {4, 10, 20}
 
 والتي تعبر عند α = 20 (CostR20 = FP + 20·FN) عن حقيقة أن تفويت حالة اصطدام واحدة يعادل تشغيليًا تكلفة 20 إنذارًا كاذبًا.
 
-![الشكل (5-1): المخطط المعماري الشامل لنظام M6-LeakFree ثنائي المراحل وتوزيع الكثافة الإيجابية عبر النطاقات الفيزيائية الستة (Z1 إلى Z6) عند حائط الـ 48 ساعة — عر](../../../Figures/figure_5_1_two_stage_m6_architecture.png)
+![الشكل (5-1): المخطط المعماري الشامل لنظام M6-LeakFree ثنائي المراحل وتوزيع الكثافة الإيجابية عبر النطاقات الفيزيائية الستة (Z1 إلى Z6) عند حائط الـ 48 ساعة — عر](../../Figures/figure_5_1_two_stage_m6_architecture.png)
 
 *الشكل (5-1): المخطط المعماري الشامل لنظام M6-LeakFree ثنائي المراحل وتوزيع الكثافة الإيجابية عبر النطاقات الفيزيائية الستة (Z1 إلى Z6) عند حائط الـ 48 ساعة — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1YK8OE_c5Yow2AwgsYNTgx12PW8aM-Ugn/view?usp=drivesdk)*
 
@@ -74,7 +74,7 @@ CostRα = FP + α · FN,       α  ∈  {4, 10, 20}
 
 4. النظام المرجعي الرابع B3 — توسيع عتبة الخطر الخام دون تعلم آلي (Naive Threshold Lowering: last_risk >= -6.5): يرفع الاستدعاء إلى 0.7973، لكنه يتسبب في انفجار الإنذارات الكاذبة من 53.80 إلى 71.88 إنذارًا لكل طية وانهيار الدقة إلى 17.64% وتراجع F2 إلى 0.4675.
 
-![الشكل (5-2): المقايضة التشغيلية بين الأنظمة المرجعية الأربعة (B0–B3) والتشريح الفيزيائي للحالات الـ 23 الفائتة في التدريب مقابل إشارة الفيزياء المتاحة قبل القطع](../../../Figures/figure_5_2_fn_taxonomy_and_z1_z6_regimes.png)
+![الشكل (5-2): المقايضة التشغيلية بين الأنظمة المرجعية الأربعة (B0–B3) والتشريح الفيزيائي للحالات الـ 23 الفائتة في التدريب مقابل إشارة الفيزياء المتاحة قبل القطع](../../Figures/figure_5_2_fn_taxonomy_and_z1_z6_regimes.png)
 
 *الشكل (5-2): المقايضة التشغيلية بين الأنظمة المرجعية الأربعة (B0–B3) والتشريح الفيزيائي للحالات الـ 23 الفائتة في التدريب مقابل إشارة الفيزياء المتاحة قبل القطع — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1xr5AfcOeJdBeo6OpO92d5fduMl52jwFg/view?usp=drivesdk)*
 
@@ -139,7 +139,7 @@ dilution_gape = last_max_risk_estimatee - last_riske,       risk_slopee = frac{l
 
 تدمج جميع الخصائص الفيزيائية والزمنية في F1–F6 مع إزالة الأعمدة الفئوية الـ 18 الخاصة بنوع الجسم (c_object_type_* وt_object_type_*). والسبب الفيزيائي الجوهري لإزالة هذه الأعمدة هو منع الأشجار القرارية من حفظ اختصارات فئوية هشة (مثل استبعاد فئة PAYLOAD أو UNKNOWN آليًا)، وإجبارها على اتخاذ القرار بناءً على الفيزياء المدارية وهندسة التغاير فقط.
 
-![الشكل (5-3): التدرج التجريبي للعائلات الفيزيائية السبع (F1 إلى F7) تحت قيد ثبات الميزانية، ونتائج تجربة الحذف الشجري (Leave-One-Family-Out Ablation) عبر 15 طية ](../../../Figures/figure_5_3_f1_f7_ablation_and_covariance_impact.png)
+![الشكل (5-3): التدرج التجريبي للعائلات الفيزيائية السبع (F1 إلى F7) تحت قيد ثبات الميزانية، ونتائج تجربة الحذف الشجري (Leave-One-Family-Out Ablation) عبر 15 طية ](../../Figures/figure_5_3_f1_f7_ablation_and_covariance_impact.png)
 
 *الشكل (5-3): التدرج التجريبي للعائلات الفيزيائية السبع (F1 إلى F7) تحت قيد ثبات الميزانية، ونتائج تجربة الحذف الشجري (Leave-One-Family-Out Ablation) عبر 15 طية — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1CX7ZozyKo3-obD2R0kn5Il7Cp7bfsqQ-/view?usp=drivesdk)*
 
@@ -190,7 +190,7 @@ dilution_gape = last_max_risk_estimatee - last_riske,       risk_slopee = frac{l
 
 انخفضت خسارة الحالات الخطرة في المرحلة الأولى إلى صفر مطلق (Vetoed_TP_Te = 0.0000) عبر جميع الـ 15 طية!
 
-![الشكل (5-4): نتائج الدراسة المعمارية المحكومة (M0 إلى M6) في التحقق المتقاطع ذي الـ 15 طية (8,892 حدثًا) من حيث مقياس F_2، ودالة الخسارة الرسمية L، والتكلفة الت](../../../Figures/figure_5_4_m0_m6_ablation_and_cost_r20.png)
+![الشكل (5-4): نتائج الدراسة المعمارية المحكومة (M0 إلى M6) في التحقق المتقاطع ذي الـ 15 طية (8,892 حدثًا) من حيث مقياس F_2، ودالة الخسارة الرسمية L، والتكلفة الت](../../Figures/figure_5_4_m0_m6_ablation_and_cost_r20.png)
 
 *الشكل (5-4): نتائج الدراسة المعمارية المحكومة (M0 إلى M6) في التحقق المتقاطع ذي الـ 15 طية (8,892 حدثًا) من حيث مقياس F_2، ودالة الخسارة الرسمية L، والتكلفة التشغيلية غير المتماثلة CostR20 — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1Uv0KCUP3TaP2zAHC7vNY27eMyx11jg1g/view?usp=drivesdk)*
 
@@ -259,7 +259,7 @@ S1(i) = 0.55 · zRF, nocat(i) + 0.30 · zHGB, nocat(i) + 0.15 · zET, nocat(i)
 * درجة الإنقاذ الهجينة في المرحلة الثانية (Stage-2 Rescue Score في Z3: [-7.0, -6.0)):
 S2(i) = 0.30 · zRF, norisk(i) + 0.35 · zHGB, nocat(i) + 0.25 · zET, nocat(i) + 0.10 · zRF, nocat(i) + 1.00 · LRi
 
-![الشكل (5-5): أثر مصنف الإنقاذ الأعمى عن الخطر (NORISK_NOCAT) في رفع OOF ROC-AUC داخل النطاق Z3 بمقدار +7.01%، وأثر نموذج الانحدار الشرطي ثلاثي المناطق في خفض خط](../../../Figures/figure_5_5_norisk_nocat_z3_auc_and_3zone_reg.png)
+![الشكل (5-5): أثر مصنف الإنقاذ الأعمى عن الخطر (NORISK_NOCAT) في رفع OOF ROC-AUC داخل النطاق Z3 بمقدار +7.01%، وأثر نموذج الانحدار الشرطي ثلاثي المناطق في خفض خط](../../Figures/figure_5_5_norisk_nocat_z3_auc_and_3zone_reg.png)
 
 *الشكل (5-5): أثر مصنف الإنقاذ الأعمى عن الخطر (NORISK_NOCAT) في رفع OOF ROC-AUC داخل النطاق Z3 بمقدار +7.01%، وأثر نموذج الانحدار الشرطي ثلاثي المناطق في خفض خطأ المربعات (MSE) بنسبة -33.5% — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1WizizZiiIX_sjG08-smQay5-jn6twnxh/view?usp=drivesdk)*
 
@@ -345,7 +345,7 @@ Kres, prior = round( |Z3,te| · qres, tr · ρprior ) = round( 187 × 0.06407 ×
 
 مقابل عزله لـ 11 إنذارًا كاذبًا في Z2، ليصبح إجمالي الإنذارات 178 - 11 + 26 = 193 Alarms (أقل بكثير من الفائز الأول sesc الذي أطلق 301 إنذار، والثاني dietmarw الذي أطلق 221 إنذارًا، والثالث Magpies الذي أطلق 283 إنذارًا!).
 
-![الشكل (5-6): تشخيص انجراف المدخلات غير الموجه (ρprior = 2.1546×) ومنحنى تقارب خوارزمية Saerens et al. (2002) EM من 20.65% إلى 63.40% (مقابل 64.61% في الحقيقة) د](../../../Figures/figure_5_6_saerens_em_prior_shift_adaptation.png)
+![الشكل (5-6): تشخيص انجراف المدخلات غير الموجه (ρprior = 2.1546×) ومنحنى تقارب خوارزمية Saerens et al. (2002) EM من 20.65% إلى 63.40% (مقابل 64.61% في الحقيقة) د](../../Figures/figure_5_6_saerens_em_prior_shift_adaptation.png)
 
 *الشكل (5-6): تشخيص انجراف المدخلات غير الموجه (ρprior = 2.1546×) ومنحنى تقارب خوارزمية Saerens et al. (2002) EM من 20.65% إلى 63.40% (مقابل 64.61% في الحقيقة) دون استخدام أي تسميات اختبار — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1-67igT3jHXhn-qu56SpmShV9EClu38I-/view?usp=drivesdk)*
 
@@ -373,7 +373,7 @@ Kres, prior = round( |Z3,te| · qres, tr · ρprior ) = round( 187 × 0.06407 ×
 
 * M7_V4_ThreeStage_PeakF2_Champion (206 إنذارات): يصيب 130 حالة تصادم حقيقية (TP = 130, FP = 76, FN = 20)، محققًا Recall = 86.67%، وPrecision = 63.11%، وF2 = 0.80645، وMSE_HR = 0.39138، وخسارة رسمية ESA Loss L = 0.48531، وتكلفة تشغيلية Cost_R20 = 476 (متفوقًا على صاحب المركز الأول الرسمي sesc ذي L = 0.55531 بفارق -12.6% وبأقل منه بـ 95 إنذارًا كاذبًا!).
 * M7_V4_ThreeStage_BudgetMatched (187 إنذارًا): يصيب 126 حالة تصادم حقيقية (TP = 126, FP = 61, FN = 24)، محققًا Precision = 67.38%، وRecall = 84.00%، وF2 = 0.80051، وخسارة رسمية ESA Loss L = 0.49960.
-![الشكل (5-7): المقارنة الشاملة على لوحة الصدارة الرسمية لمسابقة وكالة الفضاء الأوروبية (2,167 حدث اختبار)، ونتائج تجربة الـ 505 تقسيم مونت كارلو في ورقة Uriot et](../../../Figures/figure_5_7_leaderboard_and_m7_v4_benchmark.png)
+![الشكل (5-7): المقارنة الشاملة على لوحة الصدارة الرسمية لمسابقة وكالة الفضاء الأوروبية (2,167 حدث اختبار)، ونتائج تجربة الـ 505 تقسيم مونت كارلو في ورقة Uriot et](../../Figures/figure_5_7_leaderboard_and_m7_v4_benchmark.png)
 
 *الشكل (5-7): المقارنة الشاملة على لوحة الصدارة الرسمية لمسابقة وكالة الفضاء الأوروبية (2,167 حدث اختبار)، ونتائج تجربة الـ 505 تقسيم مونت كارلو في ورقة Uriot et al. (2022) (https://doi.org/10.1007/s42064-021-0101-5) التي تكشف انهيار النماذج المعايرة على اللوحة — عرض الشكل بدقة كاملة على Google Drive (https://drive.google.com/file/d/1ODatvyzW1uVLfNXEC9rXDUjcovb8OtS1/view?usp=drivesdk)*
 
@@ -482,31 +482,31 @@ P̂te(yi = 1  |  xi) = (1.0746) / (1.0746 + 0.2998) = 0.7819     (78.19%)
 * دفتر NotebookLM الموسوعي: موسوعة رسائل الـ CDM وتحدي ESA (https://gemini.google.com/notebook/d6ce9c4b-2b05-4601-891a-90a83bac3736).
 ## Figure assets
 
-![figure 5 1 two stage m6 architecture](../../../Figures/figure_5_1_two_stage_m6_architecture.png)
+![figure 5 1 two stage m6 architecture](../../Figures/figure_5_1_two_stage_m6_architecture.png)
 
 *`Figures/figure_5_1_two_stage_m6_architecture.png`*
 
-![figure 5 2 fn taxonomy and z1 z6 regimes](../../../Figures/figure_5_2_fn_taxonomy_and_z1_z6_regimes.png)
+![figure 5 2 fn taxonomy and z1 z6 regimes](../../Figures/figure_5_2_fn_taxonomy_and_z1_z6_regimes.png)
 
 *`Figures/figure_5_2_fn_taxonomy_and_z1_z6_regimes.png`*
 
-![figure 5 3 f1 f7 ablation and covariance impact](../../../Figures/figure_5_3_f1_f7_ablation_and_covariance_impact.png)
+![figure 5 3 f1 f7 ablation and covariance impact](../../Figures/figure_5_3_f1_f7_ablation_and_covariance_impact.png)
 
 *`Figures/figure_5_3_f1_f7_ablation_and_covariance_impact.png`*
 
-![figure 5 4 m0 m6 ablation and cost r20](../../../Figures/figure_5_4_m0_m6_ablation_and_cost_r20.png)
+![figure 5 4 m0 m6 ablation and cost r20](../../Figures/figure_5_4_m0_m6_ablation_and_cost_r20.png)
 
 *`Figures/figure_5_4_m0_m6_ablation_and_cost_r20.png`*
 
-![figure 5 5 norisk nocat z3 auc and 3zone reg](../../../Figures/figure_5_5_norisk_nocat_z3_auc_and_3zone_reg.png)
+![figure 5 5 norisk nocat z3 auc and 3zone reg](../../Figures/figure_5_5_norisk_nocat_z3_auc_and_3zone_reg.png)
 
 *`Figures/figure_5_5_norisk_nocat_z3_auc_and_3zone_reg.png`*
 
-![figure 5 6 saerens em prior shift adaptation](../../../Figures/figure_5_6_saerens_em_prior_shift_adaptation.png)
+![figure 5 6 saerens em prior shift adaptation](../../Figures/figure_5_6_saerens_em_prior_shift_adaptation.png)
 
 *`Figures/figure_5_6_saerens_em_prior_shift_adaptation.png`*
 
-![figure 5 7 leaderboard and m7 v4 benchmark](../../../Figures/figure_5_7_leaderboard_and_m7_v4_benchmark.png)
+![figure 5 7 leaderboard and m7 v4 benchmark](../../Figures/figure_5_7_leaderboard_and_m7_v4_benchmark.png)
 
 *`Figures/figure_5_7_leaderboard_and_m7_v4_benchmark.png`*
 
@@ -515,19 +515,19 @@ P̂te(yi = 1  |  xi) = (1.0746) / (1.0746 + 0.2998) = 0.7819     (78.19%)
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_01.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_01.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_02.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_02.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_03.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_03.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_04.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_04.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_05.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_05.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_06.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_06.png)
 
-![رسم مضمن من مستند الفصل 5](../../../Figures/embedded/chapter_05_embedded_07.png)
+![رسم مضمن من مستند الفصل 5](../../Figures/embedded/chapter_05_embedded_07.png)
 
 
 ## خلاصة الانتقال

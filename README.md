@@ -91,3 +91,8 @@ orbital-esa-collision-avoidance/
 ├── tools/evaluate_with_external_ground_truth.py # Offline evaluator for external private test labels
 └── tests/                               # End-to-End Integration, Risk-Blind, Data Governance & Zero-Plotly Tests
 ```
+
+
+## 6. Reproducing the research
+
+The repository includes the ESA dataset acquisition instructions, training entry point, archived experiment notebooks, and saved evaluation artifacts. Start with [the reproducibility guide](docs/REPRODUCIBILITY.md), then see [the contributing guide](CONTRIBUTING.md) for environment setup and development checks.

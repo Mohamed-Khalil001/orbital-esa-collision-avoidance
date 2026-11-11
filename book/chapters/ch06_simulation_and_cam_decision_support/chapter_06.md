@@ -75,7 +75,7 @@
 | 850.0 | 98.8° | MetOp / Polar Weather Corridor (850 km) | 7,228.137 | 0.0010274 | 101.93 | 0.999706 | 0.0010271 | 2.564 km | 0.0059 km |
 | 1000.0 | 86.4° | High-LEO / Iridium Next Shell (1000 km) | 7,378.137 | 0.0009962 | 105.12 | 0.999700 | 0.0009959 | 2.630 km | 0.0264 km |
 
-![الشكل (6-1): ديناميكا الفضاء الطوري لمعادلات Hill–Clohessy–Wiltshire (HCW) في إطار RTN (يسار)، والتضخيم العلماني لعناصر مصفوفة انتقال الحالة $|\mathbf{\Phi}{rv}](../../../Figures/figure_6_1_hcw_rtn_and_stm_geometry.png)
+![الشكل (6-1): ديناميكا الفضاء الطوري لمعادلات Hill–Clohessy–Wiltshire (HCW) في إطار RTN (يسار)، والتضخيم العلماني لعناصر مصفوفة انتقال الحالة $|\mathbf{\Phi}{rv}](../../Figures/figure_6_1_hcw_rtn_and_stm_geometry.png)
 
 *الشكل (6-1): ديناميكا الفضاء الطوري لمعادلات Hill–Clohessy–Wiltshire (HCW) في إطار RTN (يسار)، والتضخيم العلماني لعناصر مصفوفة انتقال الحالة $|\mathbf{\Phi}{rv}(\Delta t)|$ مع زمن المبادأة $T{\text{lead}}$ والذي يثبت تفوق الحرق المماسي $\Delta v_T$ بعشرات الأضعاف على الحرق الشعاعي والعمودي (../../figures/figure_6_1_hcw_rtn_and_stm_geometry.png).*
 
@@ -116,7 +116,7 @@
 | 10.00× | (650.0, 6280.0, 950.0) | 1591.33 × 650.00 | 0.0818 | 1.084e-04 | -3.9650 | -1.9271 | منطقة التخفيف العميقة (ثقة كاذبة) |
 | 20.00× | (1300.0, 12560.0, 1900.0) | 3182.66 × 1300.01 | 0.0409 | 2.717e-05 | -4.5660 | -1.9271 | تخفيف شديد (رغم ثبات سقف ألفانو عند -1.93) |
 
-![الشكل (6-2): إسقاط مستوى المواجهة ثنائي الأبعاد (2D Encounter B-Plane) مع إهليلجات عدم اليقين $1\sigma / 2\sigma / 3\sigma$ وقرص الجسم الصلب $R_{\text{HBR}} = 1](../../../Figures/figure_6_2_bplane_projection_and_polar_quadrature.png)
+![الشكل (6-2): إسقاط مستوى المواجهة ثنائي الأبعاد (2D Encounter B-Plane) مع إهليلجات عدم اليقين $1\sigma / 2\sigma / 3\sigma$ وقرص الجسم الصلب $R_{\text{HBR}} = 1](../../Figures/figure_6_2_bplane_projection_and_polar_quadrature.png)
 
 *الشكل (6-2): إسقاط مستوى المواجهة ثنائي الأبعاد (2D Encounter B-Plane) مع إهليلجات عدم اليقين $1\sigma / 2\sigma / 3\sigma$ وقرص الجسم الصلب $R_{\text{HBR}} = 15\text{ m}$ وإزاحة ما بعد المناورة (يسار)، ومنحنى تخفيف الاحتمال مقارنةً بسقف ألفانو الأعلى (يمين) (../../figures/figure_6_2_bplane_projection_and_polar_quadrature.png).*
 
@@ -173,15 +173,15 @@
 
 تُبرز الأشكال (6-3) و**(6-4)** و**(6-5)** هذه الحقائق الفيزيائية بصريًا: فبينما يفشل الدفع الشعاعي والعمودي حتى عند $5\text{ cm/s}$ في إخراج القمر من دائرة الخطر، ينجح دفع مماسي لا يتعدى 0.60 cm/s عند حاجز الـ 48 ساعة في إسقاط $\log_{10}(P_c)$ تحت -6.0 باستهلاك 3.34 غرامات فقط من الوقود، في حين أن التأخر في القرار إلى 6 ساعات قبل TCA يضاعف كلفة الوقود إلى 4.15 cm/s (6.92× أضعاف)! وهذا هو التفسير الفيزيائي والاقتصادي العميق لاختيار وكالة الفضاء الأوروبية حاجز الـ 48 ساعة ($t \le -2.0\text{ days}$) في مسابقة Kelvins.
 
-![الشكل (6-3): منحنيات المقايضة لمناورة تفادي الاصطدام (CAM Tradeoff) عند $T - 48\text{ hours}$: المسافة الفاصلة بعد المناورة (يسار) وانخفاض الخطر المتبقي $\log_{](../../../Figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png)
+![الشكل (6-3): منحنيات المقايضة لمناورة تفادي الاصطدام (CAM Tradeoff) عند $T - 48\text{ hours}$: المسافة الفاصلة بعد المناورة (يسار) وانخفاض الخطر المتبقي $\log_{](../../Figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png)
 
 *الشكل (6-3): منحنيات المقايضة لمناورة تفادي الاصطدام (CAM Tradeoff) عند $T - 48\text{ hours}$: المسافة الفاصلة بعد المناورة (يسار) وانخفاض الخطر المتبقي $\log_{10}(P_c)$ (يمين) للدفع المماسي $\Delta v_T$ مقارنةً بالدفع الشعاعي $\Delta v_R$ والعمودي $\Delta v_N$ (../../figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png).*
 
-![الشكل (6-4): مسار الاقتراب النسبي ثلاثي الأبعاد المحسوب بمكامل RK4 مع تصحيح التفلطح $J_2$ قبل وبعد مناورة مماسية مقدارها $\Delta v_T = +1.5\text{ cm/s}$ عند $T ](../../../Figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png)
+![الشكل (6-4): مسار الاقتراب النسبي ثلاثي الأبعاد المحسوب بمكامل RK4 مع تصحيح التفلطح $J_2$ قبل وبعد مناورة مماسية مقدارها $\Delta v_T = +1.5\text{ cm/s}$ عند $T ](../../Figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png)
 
 *الشكل (6-4): مسار الاقتراب النسبي ثلاثي الأبعاد المحسوب بمكامل RK4 مع تصحيح التفلطح $J_2$ قبل وبعد مناورة مماسية مقدارها $\Delta v_T = +1.5\text{ cm/s}$ عند $T - 48\text{ hours}$، مبينًا ارتفاع المسافة الفاصلة الدنيا من 215.7 m إلى 7,647.3 m (../../figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png).*
 
-![الشكل (6-5): خريطة الكنتور ثنائية الأبعاد لخطر الاصطدام المتبقي $\log_{10}(P_c)$ عبر فضاء التصميم $(T_{\text{lead}}, \Delta v_T)$ (يسار)، وقانون التكلفة القطعية](../../../Figures/figure_6_5_lead_time_vs_delta_v_contour.png)
+![الشكل (6-5): خريطة الكنتور ثنائية الأبعاد لخطر الاصطدام المتبقي $\log_{10}(P_c)$ عبر فضاء التصميم $(T_{\text{lead}}, \Delta v_T)$ (يسار)، وقانون التكلفة القطعية](../../Figures/figure_6_5_lead_time_vs_delta_v_contour.png)
 
 *الشكل (6-5): خريطة الكنتور ثنائية الأبعاد لخطر الاصطدام المتبقي $\log_{10}(P_c)$ عبر فضاء التصميم $(T_{\text{lead}}, \Delta v_T)$ (يسار)، وقانون التكلفة القطعية للوقود $|\Delta v_T|{\min} \propto 1/T{\text{lead}}$ الذي يثبت لماذا يوفر التنبؤ المبكر عند 48 ساعة نحو 75% إلى 85% من وقود القمر الصناعي مقارنةً بمناورات اللحظة الأخيرة (يمين) (../../figures/figure_6_5_lead_time_vs_delta_v_contour.png).*
 
@@ -236,7 +236,7 @@ tests/test_simulation.py: يتحقق من الهوية الرياضية $\mathbf
 | 5. محاكي المدار والمناورات | src/simulation.py | hcw_state_transition_matrix, bplane_collision_probability, compute_cam_effect | tests/test_simulation.py | 4 | تحقق $\mathbf{\Phi}(0)=\mathbf{I}6$، وتعامد B-Plane، ومتباينة $P_c \le P{c,\max}$، وكفاءة CAM. |
 | 6. منصة العرض التفاعلي | app/main.py, app/viz_components.py | render_threejs_encounter, render_canvas_chart, Decision Card | Integrated Suite & Security Gate | 19 (إجمالي) | عرض Three.js WebGL 3D ولوحات HTML5 Canvas وبوابة أمان .joblib. |
 
-![الشكل (6-6): المخطط المعماري الشامل لمنصة ORBITAL-AI في بيئة الإنتاج، موضحًا الفصل الصارم بين مسار التنبؤ بالتعلم الآلي (M6-LeakFree) ومسار المحاكاة الفيزيائية ](../../../Figures/figure_6_6_orbital_ai_platform_architecture.png)
+![الشكل (6-6): المخطط المعماري الشامل لمنصة ORBITAL-AI في بيئة الإنتاج، موضحًا الفصل الصارم بين مسار التنبؤ بالتعلم الآلي (M6-LeakFree) ومسار المحاكاة الفيزيائية ](../../Figures/figure_6_6_orbital_ai_platform_architecture.png)
 
 *الشكل (6-6): المخطط المعماري الشامل لمنصة ORBITAL-AI في بيئة الإنتاج، موضحًا الفصل الصارم بين مسار التنبؤ بالتعلم الآلي (M6-LeakFree) ومسار المحاكاة الفيزيائية التحليلية للمناورات (HCW STM + B-Plane Polar Quadrature + Three.js WebGL) (../../figures/figure_6_6_orbital_ai_platform_architecture.png).*
 
@@ -259,7 +259,7 @@ tests/test_simulation.py: يتحقق من الهوية الرياضية $\mathbf
 | الفصل الخامس (Ch 05) | المعمارية ثنائية المراحل الموجهة بالفيزياء (Physics-Guided Two-Stage M6-LeakFree) | 228 ميزة فيزيائية (F1–F7)، قفل -5.25، عزل NOCAT، إنقاذ NORISK، وتكيف Saerens EM. | M6-LeakFree (F2=0.7692 الأول عالميًا، L=0.6355 الثامن رسميًا)، والحد الأعلى M7-V4 (F2=0.8065). | Chapter_05_Physics_Guided_TwoStage_Architecture_Master_AR |
 | الفصل السادس (Ch 06) | من التنبؤ إلى الفعل: المحاكاة ثلاثية الأبعاد ومناورات التفادي (3D Simulation & CAM) | مصفوفة HCW STM، مكامل RK4 + J2، التربيع القطبي 12×24 في B-Plane، ومنصة ORBITAL-AI. | $\Delta \mathbf{r}{\text{TCA}} = -\mathbf{\Phi}{rv}\Delta\mathbf{v}$ (تضخيم $3n\Delta t$)، وقود تسيولكوفسكي، ومحاكي Three.js WebGL. | Chapter_06_3D_Simulation_BPlane_and_CAM_Decision_Support_Master_AR |
 
-![الشكل (6-7): الحصاد الكمي للمشروع على لوحة صدارة وكالة الفضاء الأوروبية من خط الأساس B0 حتى M6-LeakFree وM7-V4 (يسار)، والهرم المعماري للفصول الستة المتكاملة من](../../../Figures/figure_6_7_six_chapter_synthesis_and_roadmap.png)
+![الشكل (6-7): الحصاد الكمي للمشروع على لوحة صدارة وكالة الفضاء الأوروبية من خط الأساس B0 حتى M6-LeakFree وM7-V4 (يسار)، والهرم المعماري للفصول الستة المتكاملة من](../../Figures/figure_6_7_six_chapter_synthesis_and_roadmap.png)
 
 *الشكل (6-7): الحصاد الكمي للمشروع على لوحة صدارة وكالة الفضاء الأوروبية من خط الأساس B0 حتى M6-LeakFree وM7-V4 (يسار)، والهرم المعماري للفصول الستة المتكاملة من فيزياء المدار حتى قرار المناورة (يمين) (../../figures/figure_6_7_six_chapter_synthesis_and_roadmap.png).*
 
@@ -348,31 +348,31 @@ Consultative Committee for Space Data Systems (CCSDS). (2013). Conjunction Data 
 
 ## Figure assets
 
-![figure 6 1 hcw rtn and stm geometry](../../../Figures/figure_6_1_hcw_rtn_and_stm_geometry.png)
+![figure 6 1 hcw rtn and stm geometry](../../Figures/figure_6_1_hcw_rtn_and_stm_geometry.png)
 
 *`Figures/figure_6_1_hcw_rtn_and_stm_geometry.png`*
 
-![figure 6 2 bplane projection and polar quadrature](../../../Figures/figure_6_2_bplane_projection_and_polar_quadrature.png)
+![figure 6 2 bplane projection and polar quadrature](../../Figures/figure_6_2_bplane_projection_and_polar_quadrature.png)
 
 *`Figures/figure_6_2_bplane_projection_and_polar_quadrature.png`*
 
-![figure 6 3 cam dv along track vs radial tradeoff](../../../Figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png)
+![figure 6 3 cam dv along track vs radial tradeoff](../../Figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png)
 
 *`Figures/figure_6_3_cam_dv_along_track_vs_radial_tradeoff.png`*
 
-![figure 6 4 rk4 j2 pre post cam trajectory](../../../Figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png)
+![figure 6 4 rk4 j2 pre post cam trajectory](../../Figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png)
 
 *`Figures/figure_6_4_rk4_j2_pre_post_cam_trajectory.png`*
 
-![figure 6 5 lead time vs delta v contour](../../../Figures/figure_6_5_lead_time_vs_delta_v_contour.png)
+![figure 6 5 lead time vs delta v contour](../../Figures/figure_6_5_lead_time_vs_delta_v_contour.png)
 
 *`Figures/figure_6_5_lead_time_vs_delta_v_contour.png`*
 
-![figure 6 6 orbital ai platform architecture](../../../Figures/figure_6_6_orbital_ai_platform_architecture.png)
+![figure 6 6 orbital ai platform architecture](../../Figures/figure_6_6_orbital_ai_platform_architecture.png)
 
 *`Figures/figure_6_6_orbital_ai_platform_architecture.png`*
 
-![figure 6 7 six chapter synthesis and roadmap](../../../Figures/figure_6_7_six_chapter_synthesis_and_roadmap.png)
+![figure 6 7 six chapter synthesis and roadmap](../../Figures/figure_6_7_six_chapter_synthesis_and_roadmap.png)
 
 *`Figures/figure_6_7_six_chapter_synthesis_and_roadmap.png`*
 
