@@ -2,7 +2,7 @@
 
  > **ORBITAL-AI · Engineering Book · Chapter 3 of 6**
 
-[← Book home](../README.md) · [Previous chapter](chapter_02.md) · [Next chapter](chapter_04.md)
+[← Book home](../../README.md) · [Previous chapter](../ch02_space_surveillance_and_sp_catalog/chapter_02.md) · [Next chapter](../ch04_esoc_operations_and_ml_formulation/chapter_04.md)
 
 ---
 
@@ -688,7 +688,7 @@ Vallado, D. A. (2013). Fundamentals of Astrodynamics and Applications (4th ed.).
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 3](../Figures/embedded/chapter_03_embedded_01.png)
+![رسم مضمن من مستند الفصل 3](../../Figures/embedded/chapter_03_embedded_01.png)
 
 
 ## خلاصة الانتقال
@@ -697,4 +697,4 @@ Vallado, D. A. (2013). Fundamentals of Astrodynamics and Applications (4th ed.).
 
 ---
 
-[← Book home](../README.md) · [Previous chapter](chapter_02.md) · [Next chapter](chapter_04.md)
+[← Book home](../../README.md) · [Previous chapter](../ch02_space_surveillance_and_sp_catalog/chapter_02.md) · [Next chapter](../ch04_esoc_operations_and_ml_formulation/chapter_04.md)
