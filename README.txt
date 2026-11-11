@@ -1,0 +1,11 @@
+ORBITAL-AI companion PDF package
+
+Extract this package into the repository root, preserving folder paths.
+The PDFs are compressed and grouped by the most relevant book chapter.
+
+ch01_leo_debris_environment: Orbital_Debris_Crisis (1).pdf, Orbital_Debris_Crisis (2).pdf
+ch02_space_surveillance_and_sp_catalog: Orbital_Debris_Tracking_and_CDM.pdf
+ch03_cdm_data_lineage_103_columns: CDM_Layer_2_Orbital_Dynamics.pdf, The_Architecture_of_Orbital_Uncertainty.pdf, CDM_Mission_Control_Blueprint.pdf
+ch04_esoc_operations_and_ml_formulation: Machine_Learning_for_Space_Collision_Avoidance.pdf
+ch05_physics_guided_two_stage_m6: Orbital_Safety_and_Collision_Avoidance.pdf
+ch06_simulation_and_cam_decision_support: LEO_Collision_Warning_Lifecycle.pdf
