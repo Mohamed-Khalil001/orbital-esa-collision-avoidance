@@ -2,7 +2,7 @@
 
  > **ORBITAL-AI · Engineering Book · Chapter 4 of 6**
 
-[← Book home](../README.md) · [Previous chapter](chapter_03.md) · [Next chapter](chapter_05.md)
+[← Book home](../../README.md) · [Previous chapter](../ch03_cdm_data_lineage_103_columns/chapter_03.md) · [Next chapter](../ch05_physics_guided_two_stage_m6/chapter_05.md)
 
 ---
 
@@ -404,7 +404,7 @@ Statistical Inference on Miss Distance vs. Collision Probability (2025). arXiv:2
 
 هذه الأصول كانت مضمنة داخل ملف Word الأصلي، وتم الاحتفاظ بها منفصلة لتسهيل إعادة استخدامها والتحقق من مواضعها.
 
-![رسم مضمن من مستند الفصل 4](../Figures/embedded/chapter_04_embedded_01.png)
+![رسم مضمن من مستند الفصل 4](../../Figures/embedded/chapter_04_embedded_01.png)
 
 
 ## خلاصة الانتقال
@@ -413,4 +413,4 @@ Statistical Inference on Miss Distance vs. Collision Probability (2025). arXiv:2
 
 ---
 
-[← Book home](../README.md) · [Previous chapter](chapter_03.md) · [Next chapter](chapter_05.md)
+[← Book home](../../README.md) · [Previous chapter](../ch03_cdm_data_lineage_103_columns/chapter_03.md) · [Next chapter](../ch05_physics_guided_two_stage_m6/chapter_05.md)
