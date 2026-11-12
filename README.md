@@ -1,98 +1,348 @@
-# 🛰️ ORBITAL-AI: Physics-Guided Two-Stage Spacecraft Collision Avoidance & 6-DOF CW/RK4 Astrodynamics Workbench
+# ORBITAL-AI
+## Physics-Guided Spacecraft Collision-Risk Assessment & Astrodynamics Workbench
 
-🚀 **Live application:** [Open ORBITAL-AI on Streamlit](https://orbital-esa-collision-avoidance-3ewp7cecpuqb3kh6kmmbse.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![LightGBM](https://img.shields.io/badge/ML-LightGBM-9ACD32)](https://lightgbm.readthedocs.io/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Research Prototype](https://img.shields.io/badge/Status-Research%20Prototype-orange)](#scope-and-limitations)
 
-[![Official Metric: ESA Loss](https://img.shields.io/badge/Official_ESA_Loss_L-0.6355_(~8th_Comparative)-0284c7?style=for-the-badge)](#1-executive-summary--benchmark-summary)
-[![15-Fold Grouped OOF CV](https://img.shields.io/badge/15--Fold_Grouped_OOF_CV-L%3D0.5181_%7C_F2%3D0.5236-10b981?style=for-the-badge)](#3-methodological-integrity--why-train-cv-vs-test-differs)
-[![Architecture](https://img.shields.io/badge/Engine-Unified_350--Tree_LightGBM_%2B_Risk--Blind_S2-8b5cf6?style=for-the-badge)](#2-unified-end-to-end-system-architecture)
-[![Simulator](https://img.shields.io/badge/Simulator-WebGL_Three.js_%2B_6--State_CW%2FRK4_J2_(Zero_Plotly)-f59e0b?style=for-the-badge)](#4-coupled-6-state-cw--rk4-j2-astrodynamics--b-plane-workbench)
+**ORBITAL-AI** is an end-to-end research prototype for spacecraft conjunction-risk assessment. It combines event-level machine learning, causal CDM-history processing, physics-informed feature engineering, model governance, and an interactive orbital-mechanics workbench.
 
-**ORBITAL-AI** is an end-to-end research and engineering workbench built on the [**ESA Kelvins Spacecraft Collision Avoidance Challenge**](https://kelvins.esa.int/collision-avoidance-challenge/) dataset (`13,154` training conjunction events / `162,634` CDMs and `2,167` test conjunction events / `24,484` CDMs) and grounded in the official post-competition findings of [**Uriot et al. (2022), Astrodynamics**](https://www.sciopen.com/article/10.1007/s42064-021-0101-5).
+The project is based on the **[ESA Kelvins Spacecraft Collision Avoidance Challenge](https://kelvins.esa.int/collision-avoidance-challenge/)** dataset and the post-competition analysis by **[Uriot et al. (2022)](https://www.sciopen.com/article/10.1007/s42064-021-0101-5)**.
 
-> **Operational & Scientific Scope Disclosure:** This repository is a **Research Prototype and Retrospective Benchmark**, not a flight-certified operational collision avoidance system. The 15-fold event-grouped out-of-fold cross-validation (`ESA Loss L = 0.5181, F2 = 0.5236`) serves as our primary unbiased scientific benchmark, while test set numbers (`ESA Loss L = 0.6355, F2 = 0.7684`) are reported with explicit disclosure of early Phase 1–2 error analysis and the synthetic Monte Carlo base-rate shift documented by ESA.
+<p align="center">
+  <a href="https://orbital-esa-collision-avoidance-3ewp7cecpuqb3kh6kmmbse.streamlit.app/"><strong>Launch the ORBITAL-AI application</strong></a>
+</p>
 
-## 1. Executive Summary & Benchmark Summary
+> **Important:** ORBITAL-AI is a research and engineering prototype. It is not flight-certified, is not an operational collision-avoidance service, and must not be used as the sole basis for spacecraft maneuver decisions.
 
-In the official ESA Kelvins competition, systems are ranked strictly by **ESA Asymmetric Loss** (lower is better), evaluated at the **48-hour causal decision cutoff (`time_to_tca >= 2.0 days`)**:
+---
 
-$$\mathcal{L}_{\text{ESA}}(\mathbf{y}, \hat{\mathbf{y}}) = \frac{\text{MSE}_{\text{HR}}(\mathbf{y}, \hat{\mathbf{y}})}{F_2(\mathbf{y}, \hat{\mathbf{y}})}, \quad \text{where } y_i = \mathbb{I}(\text{final\_risk}_i \ge -6.0)$$
+## Table of contents
 
-| Evaluation Protocol / System | Cohort Size | Positive Base Rate | Official ESA Loss $\mathcal{L}$ (Lower = Better) | Classification $F_2$ | $\text{MSE}_{\text{HR}}$ | Notes & Governance Status |
-| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **15-Fold Event-Grouped OOF CV (`M6-LeakFree`)** | 8,892 | 1.05% (93) | **0.51810** | 0.52360 | 0.27131 | **Primary Unbiased Scientific Benchmark** |
-| **sesc** ([Official ESA 1st Place](https://kelvins.esa.int/collision-avoidance-challenge/results/)) | 2,167 | 3.18% | **0.55531** | — | — | Official ESA Competition Winner |
-| **dietmarw** ([Official ESA 2nd Place](https://kelvins.esa.int/collision-avoidance-challenge/results/)) | 2,167 | 3.18% | **0.57446** | — | — | Official ESA 2nd Place |
-| **Magpies** ([Official ESA 3rd Place](https://kelvins.esa.int/collision-avoidance-challenge/results/)) | 2,167 | 3.18% | **0.58489** | — | — | Official ESA 3rd Place |
-| **DunderMifflin** ([Official ESA 7th Place](https://kelvins.esa.int/collision-avoidance-challenge/results/)) | 2,167 | 3.18% | **0.62758** | — | — | Official ESA 7th Place |
-| **⭐ `M6-LeakFree` (Prior-Adapted 3-Zone)** | 2,167 | 3.18% | **0.63548** | 0.76835 | 0.48827 | **Retrospective Test Benchmark (~8th Comparative in Loss)** |
-| **⭐ `M6-LeakFree` (Fixed Budget $r = 1.00$)** | 2,167 | 3.18% | **0.63650** | 0.76923 | 0.48961 | **Retrospective Test Benchmark (Zero Prior Shift Tuning)** |
-| **Spacemeister** ([Official ESA 8th Place](https://kelvins.esa.int/collision-avoidance-challenge/results/)) | 2,167 | 3.18% | **0.65162** | — | — | Official ESA 8th Place |
-| **B0 Last-Risk Persistence (`last_risk >= -6.0`)** | 2,167 | 3.18% | **0.69396** | 0.73300 | 0.50867 | Official Domain Heuristic Baseline |
+- [Project overview](#project-overview)
+- [What the system includes](#what-the-system-includes)
+- [System architecture](#system-architecture)
+- [Machine-learning methodology](#machine-learning-methodology)
+- [Research results](#research-results)
+- [Orbital mechanics workbench](#orbital-mechanics-workbench)
+- [Quick start](#quick-start)
+- [API overview](#api-overview)
+- [Repository structure](#repository-structure)
+- [Data and reproducibility](#data-and-reproducibility)
+- [Scope and limitations](#scope-and-limitations)
+- [References](#references)
 
-## 2. Unified End-to-End System Architecture
+## Project overview
 
-Unlike disconnected prototypes where a saved `.joblib` model, a heuristic API script, and a static frontend operate independently, **ORBITAL-AI** executes a single unified pipeline from raw CDM time series to final predictions across the Python package, FastAPI server, and Streamlit console:
+A conjunction event is represented by a sequence of **Conjunction Data Messages (CDMs)** describing how the estimated state and collision-risk information evolve as two space objects approach a possible encounter.
 
-1. **Causal Cutoff Filter (`src/features/causal_engineering.py:filter_causal_cdms`)**:
-   - Strictly discards any Conjunction Data Message (CDM) with `time_to_tca < 2.0 days`. Payloads lacking pre-cutoff CDMs are rejected by `POST /api/v1/predict-event` with `HTTP 422`.
-2. **Unified Event-Level Feature Engineering (`src/features.build_event_features`)**:
-   - Aggregates variable-length CDM histories per `event_id` into `306` features covering kinematics, 3D RTN covariance dynamics, OD tracking quality, and approach geometry.
-3. **Explicit Stage-2 Physical Allowlist (`STAGE2_PHYSICAL_ALLOWLIST` & `RISK_HISTORY_COLS`)**:
-   - Enforces a dual barrier for the Stage-2 Rescue classifier: every Stage-2 feature must belong to the explicit `184`-feature `STAGE2_PHYSICAL_ALLOWLIST` AND must not appear in `RISK_HISTORY_COLS` (which blocks all 39 operational risk-history columns, including `risk_floor_fraction`, `risk_floor_count`, `risk_all_floor`, `risk_nonfloor_std`, `risk_first_nonfloor`, `risk_last_nonfloor`, `days_since_last_nonfloor_risk`, `risk_nonfloor_delta`, `risk_nonfloor_slope`, and `dilution_gap`).
-   - Verified by automated unit tests (`tests/test_pipeline.py`): randomizing all 39 operational risk-history columns produces **exact `0.000000` change** in `stage2_booster` output.
-4. **Serialized LightGBM v4 Tree Ensembles (`models/final_model.joblib` & `models/final_collision_risk_model.joblib`)**:
-   - Both `src/modeling.py` and `src/models/two_stage_m6.py` load `models/final_model.joblib` from disk and evaluate its **350 compiled Stage-1 `NOCAT` LightGBM decision trees** and **350 compiled Stage-2 Risk-Blind `STAGE2_PHYSICAL_ALLOWLIST` LightGBM decision trees**, followed by the train-fitted **Three-Zone Conditional Regressor** (`Z1 HardLock >= -5.25`, `Z2 Veto [-6.0, -5.25)`, `Z3 Rescue [-7.0, -6.0)`).
+ORBITAL-AI processes the available CDM history at the **event level**, rather than treating every CDM as an independent prediction sample. Its main ML workflow uses information available at least **48 hours before the Time of Closest Approach (TCA)**:
 
-## 3. Methodological Integrity & Why Train CV vs. Test Differs
+```
+CDM history
+    |
+    v
+48-hour causal cutoff
+    |
+    v
+Event-level feature engineering
+    |
+    v
+Two-stage LightGBM inference
+    |
+    v
+Risk assessment and prediction output
+```
 
-A critical scientific question when inspecting the results table is why Classification $F_2$ rises from **`0.5236`** on 15-Fold Out-of-Fold Training CV to **`0.7684`–`0.7692`** on the test cohort, while Official ESA Loss $\mathcal{L}$ increases from **`0.5181`** to **`0.6355`**:
+The project also provides a separate astrodynamics workbench for exploring relative motion, covariance geometry, encounter-plane probability calculations, and collision-avoidance maneuver scenarios.
 
-1. **Positive Base-Rate Shift (505 Synthetic Monte Carlo Events)**:
-   - As documented in Section 2.3 of [**Uriot et al. (2022)**](https://www.sciopen.com/article/10.1007/s42064-021-0101-5), the ESA organizers augmented real ESOC conjunction logs with `505` synthetic Monte Carlo close approaches and partitioned them disproportionately into the test set.
-   - Consequently, the test-like training split has a positive prevalence of **$1.05\%$ (`93 / 8,892`)**, whereas the official test split has a positive prevalence of **$3.18\%$ (`69 / 2,167` strict target / `150 / 2,167` extended cohort)** — a **$3.0\times$ higher positive base rate**.
-   - At a fixed false-positive rate, a $3\times$ higher positive base rate mechanically increases Precision and boosts $F_2$ (even the simple `B0` baseline jumps from `F2 = 0.502` in Train CV to `F2 = 0.733` on Test).
-   - Simultaneously, late-escalating high-risk test events whose pre-cutoff risk is floored (`-30.0`) incur large squared errors on positive events, raising $\text{MSE}_{\text{HR}}$ from `0.2713` to `0.4883` and therefore increasing $\mathcal{L} = \text{MSE}_{\text{HR}} / F_2$ from `0.5181` to `0.6355`.
-2. **Unsupervised EM Prior Adaptation Verification**:
-   - `modeling.verify_and_estimate_em_prior_shift` implements the Saerens–Latinne–Decaestecker (2002) EM algorithm alongside a Two-Sample Kolmogorov–Smirnov (`ks_2samp`) diagnostic (`KS stat = 0.0503`) to verify that the unlabeled test score distribution is consistent with a prior mixture shift of the training class-conditional distributions.
-3. **Strict Public Repository Data Governance**:
-   - No private test ground-truth labels (`true_final_risk`, `true_high_risk`, `test_data_private.csv`) are shipped inside this public repository (`data/`, `reports/`, `research/results/`). Researchers with local access to the external ESA archive can run `python3 tools/evaluate_with_external_ground_truth.py --external-private-labels /path/to/test_data_private.csv`.
+## What the system includes
 
-## 4. Coupled 6-State CW + RK4 J2 Astrodynamics & B-Plane Workbench
+| Component | Description |
+|---|---|
+| **Causal CDM processing** | Filters observations to preserve the 48-hour pre-TCA decision boundary. |
+| **Event-level feature engineering** | Converts variable-length CDM histories into structured features describing relative motion, covariance evolution, tracking quality, and encounter geometry. |
+| **Two-stage ML model** | Uses a Stage-1 LightGBM model and a Stage-2 model governed by an explicit physical-feature allowlist. |
+| **Risk-blind Stage 2** | Excludes operational risk-history features from the Stage-2 physical feature set. |
+| **Unified inference engine** | Shares the inference path between the Streamlit application and FastAPI service. |
+| **Model registry** | Tracks model artifacts and verifies their SHA-256 integrity before loading. |
+| **Monitoring** | Provides inference telemetry and feature-drift diagnostics. |
+| **Astrodynamics workbench** | Explores relative orbital motion, covariance projection, encounter geometry, and CAM scenarios. |
+| **Research archive** | Preserves notebooks, experiment outputs, evaluation protocols, and a companion book manuscript. |
 
-All Plotly charts have been completely removed and replaced with a hardware-accelerated **WebGL (`Three.js`) + HTML5 2D Engineering Canvas Workbench** (`web/index.html` and `src/simulator/orbital_mechanics.py`):
-- **Coupled 6-State Clohessy–Wiltshire State-Transition Matrix $\Phi(t, t_0)$ & RK4 $J_2$ Numerical Integration**: Integrates relative position and velocity $\mathbf{x}(t) = [r_R, r_T, r_N, v_R, v_T, v_N]^T$ across $t \in [-600\text{ s}, +600\text{ s}]$ around TCA.
-- **Akella & Alfriend (2000) 2D Encounter B-Plane Polar Gaussian Quadrature**: Projects the 3×3 combined RTN covariance onto the encounter plane $(\xi, \zeta) \perp \mathbf{v}_{\text{rel}}$ and numerically integrates $P_c$ over the Hard-Body Radius disk.
-- **Explicit Analytical Boundary**: Simulator outputs are strictly separated from the ML risk classifier and labeled with `OPERATIONAL_DISCLAIMER`.
+## System architecture
 
-## 5. Repository Structure (Including Companion Book `book/`)
+The repository is organized around a shared Python inference package.
+
+```mermaid
+flowchart TD
+    A[CDM History] --> B[Causal Cutoff: TCA >= 48 hours]
+    B --> C[Event-Level Feature Engineering]
+    C --> D[Stage 1: LightGBM]
+    C --> E[Stage 2: Risk-Blind LightGBM]
+    D --> F[Unified Prediction Pipeline]
+    E --> F
+    F --> G[Three-Zone Decision Logic]
+    G --> H[Prediction Output]
+    H --> I[Streamlit Application]
+    H --> J[FastAPI Service]
+    K[Model Registry and SHA-256 Validation] --> F
+    L[Monitoring and Drift Diagnostics] --> F
+```
+
+### Key engineering decisions
+
+**1. Causal observation boundary**
+
+The event pipeline excludes CDMs with `time_to_tca < 2.0` days. An event without an eligible pre-cutoff observation cannot be evaluated through the full CDM-history endpoint.
+
+**2. Event-level learning**
+
+CDMs belonging to the same conjunction event are grouped before event-level modeling and evaluation. This is important because multiple messages from one event are correlated observations, not independent events.
+
+**3. Explicit Stage-2 feature governance**
+
+Stage 2 uses the `STAGE2_PHYSICAL_ALLOWLIST` and excludes the operational risk-history feature group. The repository includes tests that perturb risk-history columns and check that Stage-2 predictions remain unchanged.
+
+**4. Shared application and API inference**
+
+The Streamlit application and FastAPI service use the shared inference engine in `src/inference.py`, reducing the risk of maintaining separate prediction implementations.
+
+**5. Model artifact integrity**
+
+Model bundles are validated and their file integrity is checked with SHA-256 before inference.
+
+## Machine-learning methodology
+
+The active research pipeline is based on a two-stage LightGBM architecture.
+
+- **Stage 1 — NOCAT:** provides the first event-level classification stage.
+- **Stage 2 — Risk-Blind physical model:** uses an explicitly governed physical-feature set, excluding the operational risk-history columns.
+- **Three-Zone logic:** applies the configured hard-lock, veto, and rescue regions to the model outputs.
+
+The current feature pipeline includes information derived from:
+
+- Relative position and velocity.
+- RTN covariance and covariance evolution.
+- Miss distance and encounter geometry.
+- Orbit-determination and tracking quality.
+- CDM history and observation timing, subject to the causal cutoff.
+
+The implementation and experiment-specific configurations are documented in the source code, notebooks, and research archive. The exact feature lists and model artifacts should be treated as versioned research assets rather than inferred from this high-level overview.
+
+## Research results
+
+The repository reports results under different evaluation protocols. These numbers should **not** be treated as interchangeable.
+
+### Primary reported training benchmark
+
+The current README benchmark summary reports the following for the M6-LeakFree event-grouped out-of-fold evaluation:
+
+| Metric | Reported result |
+|---|---:|
+| Evaluation protocol | 15-fold event-grouped OOF cross-validation |
+| Events | 8,892 |
+| Positive events | 93 |
+| ESA asymmetric loss (lower is better) | **0.5181** |
+| F2 score | **0.5236** |
+
+### Retrospective test-set benchmark
+
+The repository also reports an M6-LeakFree retrospective evaluation on the ESA test cohort, including a prior-adapted configuration with a reported ESA loss of **0.6355** and F2 of **0.7684**.
+
+These test-set figures are presented as retrospective research results, not as a new official competition placement or a fully independent untouched evaluation. The project documentation discloses early test-error analysis during the research history. Consult the evaluation-integrity and final evaluation reports before interpreting or comparing these results.
+
+### Exploratory M7-V4 results
+
+M7-V4 is retained as an **exploratory, test-informed upper-bound experiment**. Its design was influenced by forensic inspection of selected test events. Its reported test metrics must therefore not be presented as independent generalization performance or compared directly with the M6-LeakFree OOF benchmark.
+
+For protocol details, cohort definitions, historical experiments, and metric conventions, see:
+
+- [Evaluation Integrity](docs/EVALUATION_INTEGRITY.md)
+- [Final Evaluation Report](research/results/colab_run_outputs/08_Final_Evaluation_Report.md)
+- [Research Reproducibility Guide](docs/REPRODUCIBILITY.md)
+
+## Orbital mechanics workbench
+
+In addition to the ML pipeline, ORBITAL-AI includes an interactive engineering workbench built with **Three.js/WebGL** and HTML Canvas.
+
+Its research capabilities include:
+
+- **Relative orbital motion:** six-state relative position and velocity representation.
+- **Clohessy–Wiltshire (CW):** state-transition analysis for relative motion.
+- **Numerical propagation:** RK4 integration with the implemented (J_2) perturbation model.
+- **Encounter geometry:** projection of relative position and covariance onto the encounter B-plane.
+- **Collision probability exploration:** numerical integration over a hard-body-radius region.
+- **CAM scenarios:** exploration of how candidate velocity changes affect the modeled encounter.
+
+The simulator is a separate physics-oriented analysis component. Its outputs should not be interpreted as validation of the ML classifier or as maneuver commands.
+
+## Quick start
+
+### Requirements
+
+- Python **3.11 or 3.12**
+- Git
+- The dependencies listed in `requirements-dev.txt`
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Mohamed-Khalil001/orbital-esa-collision-avoidance.git
+cd orbital-esa-collision-avoidance
+```
+
+### 2. Create and activate a virtual environment
+
+**Windows PowerShell**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+### 4. Run the Streamlit application
+
+```bash
+streamlit run app/app.py
+```
+
+The repository includes pretrained model bundles and a small demonstration dataset. The full ESA dataset is not required for every application workflow.
+
+### 5. Run the test suite
+
+```bash
+pytest
+```
+
+For the supported environment, data requirements, retraining workflow, and research-notebook instructions, see the [Reproducibility Guide](docs/REPRODUCIBILITY.md).
+
+## API overview
+
+The FastAPI service can be started locally with:
+
+**Windows PowerShell**
+
+```powershell
+$env:ORBITAL_API_KEY = "replace-with-a-long-random-secret"
+uvicorn src.api.server:app --host 127.0.0.1 --port 8000
+```
+
+**macOS / Linux**
+
+```bash
+export ORBITAL_API_KEY="replace-with-a-long-random-secret"
+uvicorn src.api.server:app --host 127.0.0.1 --port 8000
+```
+
+Interactive API documentation is available at:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+### Main endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/v1/health` | Service and active model-bundle health information. |
+| `GET /api/v1/model-info` | Active model metadata and feature counts. |
+| `GET /api/v1/registry` | Model registry manifest. |
+| `POST /api/v1/registry/validate` | Validate a registered model bundle. |
+| `GET /api/v1/monitoring` | Monitoring and drift summary. |
+| `POST /api/v1/predict-event` | Full inference from a supplied CDM event history. |
+| `POST /api/v1/predict` | Simplified scalar-input demonstration prediction. |
+| `POST /api/v1/simulate-cam` | Run a maneuver scenario. |
+| `GET /api/v1/stk-orekit-benchmark` | Retrieve the configured propagator comparison output. |
+
+**Use `POST /api/v1/predict-event` for CDM-history inference.** The simplified `POST /api/v1/predict` endpoint accepts a limited set of scalar inputs and is intended for demonstration/scenario use; it is not equivalent to processing a real event's complete CDM history.
+
+Protected write endpoints under `/api/v1/` require the `X-API-Key` header by default. Keep API authentication enabled in any network-accessible deployment.
+
+## Repository structure
 
 ```text
 orbital-esa-collision-avoidance/
+├── app/                  # Streamlit application
 ├── src/
-│   ├── config.py                        # Thresholds, cutoffs, and paths
-│   ├── features/                        # Unified Causal Feature Engineering package
-│   │   ├── __init__.py                  # build_event_features, RISK_HISTORY_COLS, STAGE2_PHYSICAL_ALLOWLIST
-│   │   └── causal_engineering.py        # filter_causal_cdms (T >= 2.0d), split_stage1_and_stage2_columns
-│   ├── modeling.py                      # Compiled LightGBM v4 tree evaluator & bundle manager
-│   ├── models/two_stage_m6.py           # Unified Two-Stage M6 + LightGBM inference interface
-│   ├── simulation.py                    # Coupled 6-State CW STM + RK4 J2 + 2D B-Plane quadrature (Zero Plotly)
-│   ├── simulator/orbital_mechanics.py   # Astrodynamics simulator package interface
-│   └── api/server.py                    # FastAPI production server with X-API-Key, rate limiting & /predict-event
-├── models/
-│   ├── final_model.joblib               # Active Unified 350-Tree S1 + 350-Tree Risk-Blind S2 LightGBM bundle
-│   ├── final_collision_risk_model.joblib# Mirror unified bundle for API/CLI compatibility
-│   ├── m6_leakfree_r100_budget.joblib   # Fixed-budget (r = 1.00) unified bundle
-│   └── m7_v4_champion_exploratory.joblib# Three-stage exploratory upper-bound bundle
-├── web/index.html                       # Standalone WebGL Three.js + RK4 + 2D B-Plane Workbench (Zero Plotly)
-├── app/                                 # Streamlit Operations Console (Zero Plotly)
-├── book/                                # Dedicated directory for the 6-Chapter Companion Book Manuscript
-├── notebooks/                           # 4 Step-by-Step Educational Notebooks (100% English)
-├── research/                            # 6-Phase Research Archive & Master Colab Notebooks (100% English)
-├── tools/evaluate_with_external_ground_truth.py # Offline evaluator for external private test labels
-└── tests/                               # End-to-End Integration, Risk-Blind, Data Governance & Zero-Plotly Tests
+│   ├── api/              # FastAPI service
+│   ├── features/         # Causal filtering and event feature engineering
+│   ├── models/           # Model interfaces
+│   ├── simulator/        # Orbital mechanics implementation
+│   ├── inference.py      # Shared inference engine
+│   ├── modeling.py       # Model loading and prediction
+│   ├── monitoring.py     # Inference and drift monitoring
+│   ├── operational_cost.py
+│   ├── registry.py       # Model artifact validation and registry
+│   └── simulation.py
+├── models/               # Versioned model bundles and configurations
+├── notebooks/            # Educational and experimental notebooks
+├── research/             # Research phases, results, and evaluation artifacts
+├── tools/                # Data acquisition, evaluation, and retraining tools
+├── tests/                # Unit and integration tests
+├── web/                  # Three.js/WebGL workbench
+├── book/                 # Companion book manuscript
+├── docs/                 # Project, integrity, and reproducibility documentation
+├── requirements.txt
+└── requirements-dev.txt
 ```
 
+## Data and reproducibility
 
-## 6. Reproducing the research
+The project uses the ESA Collision Avoidance Challenge dataset. Dataset files are intentionally not committed to the repository.
 
-The repository includes the ESA dataset acquisition instructions, training entry point, archived experiment notebooks, and saved evaluation artifacts. Start with [the reproducibility guide](docs/REPRODUCIBILITY.md), then see [the contributing guide](CONTRIBUTING.md) for environment setup and development checks.
+- [ESA Kelvins Challenge](https://kelvins.esa.int/collision-avoidance-challenge/)
+- [Dataset record on Zenodo](https://zenodo.org/records/4463683)
+- [Data acquisition instructions](data/README.md)
+- [Reproducibility guide](docs/REPRODUCIBILITY.md)
+
+The reproducibility guide distinguishes between:
+
+1. Running the shipped application.
+2. Retraining the packaged baseline.
+3. Reproducing the archived research experiments.
+
+These workflows have different data and runtime requirements. Historical research notebooks may require Google Colab and adjustments to their original workspace paths.
+
+## Scope and limitations
+
+ORBITAL-AI is intended for research, education, and engineering experimentation.
+
+- It is **not flight-certified** and has not been approved for operational collision-avoidance decisions.
+- ML predictions are not guaranteed collision probabilities and should not be interpreted as maneuver instructions.
+- The simulator and ML pipeline are distinct components; one does not independently validate the other.
+- Retrospective test-set results have documented research-history limitations.
+- Full research reproduction requires the relevant source data, configurations, and experiment environment.
+- Model artifacts should only be loaded from trusted sources. Serialized `.joblib` files can execute code when deserialized.
+- Operational-cost outputs are experimental decision-support calculations, not validated estimates of real mission cost or maneuver necessity.
+
+## References
+
+1. Uriot, T. et al. (2022). *Spacecraft collision avoidance challenge: design and results of a machine learning competition*. **Astrodynamics**. [Publication](https://www.sciopen.com/article/10.1007/s42064-021-0101-5)
+2. [ESA Kelvins — Spacecraft Collision Avoidance Challenge](https://kelvins.esa.int/collision-avoidance-challenge/)
+3. [ESA Challenge Dataset — Zenodo](https://zenodo.org/records/4463683)
+4. Clohessy, W. H., & Wiltshire, R. S. (1960). *Terminal Guidance System for Satellite Rendezvous*. Journal of the Aerospace Sciences.
+5. Akella, M. R., & Alfriend, K. T. (2000). *Probability of collision between space objects*. Journal of Guidance, Control, and Dynamics.
+
+---
+
+<p align="center">
+  <strong>ORBITAL-AI</strong><br>
+  Researching safer orbital environments through machine learning and astrodynamics.
+</p>
