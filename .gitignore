@@ -8,9 +8,11 @@ venv/
 .ipynb_checkpoints/
 *.egg-info/
 
-# --- Raw ESA competition data (too large for git; see data/README.md)
+# --- Raw ESA competition data (too large/sensitive for git; see data/README.md)
 data/*.csv
 data/*.zip
+data/**/*.csv
+data/**/*.zip
 data/raw/
 !data/sample/
 !data/sample/*.csv
@@ -24,6 +26,8 @@ models/archive/*
 # --- Local secrets and editor files
 .streamlit/secrets.toml
 .env
+.env.*
+!.env.example
 .DS_Store
 Thumbs.db
 .idea/
